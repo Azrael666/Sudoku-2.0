@@ -11,19 +11,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="styles.css">
     <script defer src="sudokuClient.dart" type="application/dart"></script>
 </head>
 
 <body>
-    <div id="overlay"></div>
+    <div id="overlay">
+    </div>
     <div id="container" class="container">
-        <div id="welcome">Test</div>
+        <div id="title">>sudo ku</div>
         <table id="sudokuGameField"></table>
-        <div id="controls"></div>
-        <p>
+        <table id="sudokuControlField"></table>
+        <button id="newGameButton" class="button">New Game</button>
+        <button id="helpButton" class="button">Help</button>
+        <p id="copyright">
             <small>
-                &copy; Dirk Teschner, 2017<br>
+                &copy; Kevin Joe Reif, Dirk Teschner, 2017<br>
             </small>
         </p>
     </div>

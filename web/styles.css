@@ -9,6 +9,47 @@ html, body {
     margin: 0;
     padding: 0;
 }
-.container {
 
+.container {
+    margin: 0 auto;
+}
+
+.fixedGameField {
+    font-weight: bold;
+}
+
+.selectedControl {
+    background-color: greenyellow;
+}
+
+.highlighted {
+    background-color: gold;
+}
+
+.button {
+    width: 100px;
+    height: 20px;
+    margin: 0 auto;
+    display:block;
+}
+
+#title {
+    text-align: center;
+}
+
+#copyright {
+    text-align: center;
+}
+
+div {
+    text-align: center;
+}
+
+table {
+    margin: 0 auto;
+}
+
+td {
+    border: 1px solid;
+    text-align: center;
 }

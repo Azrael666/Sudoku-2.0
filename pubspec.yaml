@@ -1,5 +1,5 @@
 name: Sudoku
-description: Single page web app that implements an single player game like sudoku.
+description: Single page web app that implements a single player game like sudoku.
 version: 0.0.1
 #homepage: https://www.example.com
 #author: Dirk Teschner <di_teschner@yahoo.de>
@@ -12,6 +12,7 @@ environment:
 
 dev_dependencies:
   browser: ^0.10.0
+  collection: any
   dart_to_js_script_rewriter: ^1.0.1
 
 transformers:
