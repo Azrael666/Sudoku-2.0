@@ -83,8 +83,6 @@ class abstractSudoku {
     print("GameCell after: " + _gameField[row][col].toString());
   }
 
-
-
 }
 
 class SudokuGameGenerator {
@@ -189,7 +187,9 @@ class SudokuGameGenerator {
       swapSetOfRows(tempSudoku);
     }
     // swap set of cols
-    // TODO
+    for(int i = 0; i < 3; i++) {
+      tempSudoku = swapSetOfCols(tempSudoku);
+    }
 
     // swap 2 rows in set of rows
     // TODO
@@ -199,7 +199,7 @@ class SudokuGameGenerator {
 
     // swap two numbers in total
     for(int i = 0; i < 20; i++)
-      //swap2Numbers(tempSudoku);
+      swap2Numbers(tempSudoku);
 
     print("Sudoku valid?: " + isValid(tempSudoku).toString());
 
@@ -215,7 +215,7 @@ class SudokuGameGenerator {
       swapSet2 = _random.nextInt(3);
     } while(swapSet2 == swapSet1);
 
-    print("SwapSet1: " + swapSet1.toString() + " - " + swapSet2.toString());
+    //print("SwapSet1: " + swapSet1.toString() + " - " + swapSet2.toString());
 
     swapSet1 *= 3;
     swapSet2 *= 3;
@@ -238,6 +238,13 @@ class SudokuGameGenerator {
 
   }
 
+  List<List<int>> swapSetOfCols(List<List<int>> sudoku) {
+    var transposedSudoku = transposeMatrix(sudoku);
+    swapSetOfRows(transposedSudoku);
+    return transposeMatrix(transposedSudoku);
+  }
+
+
   void swap2Numbers(List<List<int>> sudoku) {
     int swap1 = _random.nextInt(9)+1;
     int swap2;
@@ -245,7 +252,7 @@ class SudokuGameGenerator {
       swap2 = _random.nextInt(9)+1;
     } while(swap2 == swap1);
 
-    print("swap1: " + swap1.toString() + " - swap2: " + swap2.toString());
+    //print("swap1: " + swap1.toString() + " - swap2: " + swap2.toString());
 
     for(int i = 0; i < sudoku.length; i++) {
       for (int j = 0; j < sudoku[0].length; j++) {

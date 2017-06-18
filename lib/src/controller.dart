@@ -51,7 +51,7 @@ class SudokuController {
 
   void clock() {
     _clockCount++;
-    _view.updateClock();
+    _view.updateClock(_clockCount);
   }
 
   void windowResize(e) {
@@ -59,10 +59,11 @@ class SudokuController {
   }
 
   void newGame(e) {
-    _model.newGame();
     _view.setModel(_model.newGame());
     _view.initialUpdate();
     _view.update();
+    _view.showHelp(_help);
+    _view.setControl();
   }
 
   void helpFunc(e) {

@@ -41,6 +41,13 @@ html, body {
 #title {
     text-align: center;
     font-size: 150%;
+    display:inline-block;
+}
+
+#clock {
+    float: right;
+    padding-left : 20px;
+    display: inline-block;
 }
 
 #copyright {

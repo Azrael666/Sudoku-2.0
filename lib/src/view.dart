@@ -17,6 +17,7 @@ class SudokuView {
   DivElement _overlay = document.getElementById("overlay");
 
   DivElement _title = document.getElementById("title");
+  DivElement _clock = document.getElementById("clock");
 
   TableElement _gameField = document.getElementById("sudokuGameField");
   TableElement _controlField = document.getElementById("sudokuControlField");
@@ -102,6 +103,15 @@ class SudokuView {
       }
     }
   }
+  
+  void setControl() {
+    List<TableCellElement> controlCells = document.querySelectorAll(".ControlCell");
+    for(TableCellElement cell in controlCells) {
+      if(cell.text == _model.getControlValue().toString())
+        updateControl(cell);
+      break;
+    }
+  }
 
   void updateControl(TableCellElement actualCell) {
     List<TableCellElement> controlCells = document.querySelectorAll(".ControlCell");
@@ -127,8 +137,8 @@ class SudokuView {
   }
 
 
-  void updateClock() {
-
+  void updateClock(int clockCount) {
+    _clock.text = clockCount.toString();
   }
 
   void updateWin() {
