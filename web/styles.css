@@ -16,6 +16,7 @@ html, body {
 
 .fixedGameField {
     font-weight: bold;
+    font-size: 150%;
 }
 
 .selectedControl {
@@ -33,8 +34,13 @@ html, body {
     display:block;
 }
 
+.ControlCell {
+    font-size: 150%;
+}
+
 #title {
     text-align: center;
+    font-size: 150%;
 }
 
 #copyright {
@@ -52,4 +58,5 @@ table {
 td {
     border: 1px solid;
     text-align: center;
+    font-size: 100%;
 }

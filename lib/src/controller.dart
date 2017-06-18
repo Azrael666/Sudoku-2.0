@@ -3,7 +3,7 @@
 
 part of sudokulib;
 
-const orientationTriggerSpeed = const Duration(milliseconds: 100);
+const clockTriggerSpeed = const Duration(milliseconds: 1000);
 
 class SudokuController {
   
@@ -12,22 +12,26 @@ class SudokuController {
   final helpButton = document.getElementById("helpButton");
   bool help = false;
   Timer orientationTrigger;
+  Timer clockTrigger;
+  int clockCount = 0;
 
-  SudokuGame game;
+  SudokuGameGenerator model;
 
   SudokuView view;
 
   SudokuController () {
-    game = new SudokuGame();
-    view = new SudokuView(game);
+    model = new SudokuGameGenerator();
+    view = new SudokuView(model);
 
     addControlStuff();
+    print(window.navigator.userAgent);
   }
 
   addControlStuff() {
     print("Add Control Stuff");
 
-    orientationTrigger = new Timer.periodic(orientationTriggerSpeed, (_) => orientation());
+    clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
+
     newGameButton.addEventListener('click', newGame);
     helpButton.addEventListener('click', helpFunc);
 
@@ -46,8 +50,9 @@ class SudokuController {
     }
   }
 
-  void orientation() {
-    view.updateOrientation();
+  void clock() {
+    clockCount++;
+    view.updateClock();
   }
 
   void windowResize(e) {
@@ -55,7 +60,7 @@ class SudokuController {
   }
 
   void newGame(e) {
-    game.newGame();
+    model.newGame();
     view.update();
     view.initialUpdate();
   }
@@ -70,7 +75,7 @@ class SudokuController {
     String cellID = cell.id.substring(5);
     int cellRow = int.parse(cellID.substring(0, 1));
     int cellCol = int.parse(cellID.substring(2));
-    game.setGameCell(cellRow, cellCol);
+    model.setGameCell(cellRow, cellCol);
 
     view.update();
     view.showHelp(help);
@@ -80,7 +85,7 @@ class SudokuController {
 
   void controlCell(TableCellElement cell) {
 
-    game.setControlValue(cell.text);
+    model.setControlValue(cell.text);
     view.updateControl(cell);
     view.showHelp(help);
   }

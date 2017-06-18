@@ -4,7 +4,7 @@
 part of sudokulib;
 
 class SudokuView {
-  SudokuGame model;
+  SudokuGameGenerator model;
 
   static int gameTableRows = 9;
   static int gameTableCols = 9;
@@ -22,7 +22,7 @@ class SudokuView {
   TableElement controlField = document.getElementById("sudokuControlField");
 
 
-  SudokuView(SudokuGame model) {
+  SudokuView(SudokuGameGenerator model) {
     print("View Constructor");
     this.model = model;
     createGameTable();
@@ -128,23 +128,16 @@ class SudokuView {
   }
 
   void updateOrientation() {
-    if(window.innerHeight < window.innerWidth) {
-      overlay.innerHtml =
-      "<h1>"
-          "Please rotate Device!"
-          "</h1>";
-      gameField.style.visibility = "hidden";
-      controlField.style.visibility = "hidden";
-    }
-    else {
-      overlay.innerHtml = "";
-      gameField.style.visibility = "visible";
-      controlField.style.visibility = "visible";
-    }
+
+
+  }
+
+  void updateClock() {
+
   }
 
   void updateWin() {
-    if(model.checkSolved())
+    if(model.isSolved())
       title.text = "WIN";
     else
       title.text = ">sudo ku";
@@ -168,6 +161,38 @@ class SudokuView {
   }
 
   void resize() {
+
+    // Device Orientation
+    var isMobile = window.matchMedia("only screen and (max-width: 760px)");
+    var orientationLandscape = window.matchMedia("(orientation: landscape)");
+
+    if(isMobile.matches) {
+      print("Mobile");
+      if(orientationLandscape.matches) {
+        overlay.innerHtml =
+        "<h1>"
+            "Please rotate Device!"
+            "</h1>"
+        //"<img src='\img\Logo_Hell.png' alt='Sudoku'>"
+            ;
+
+        gameField.style.visibility = "hidden";
+        controlField.style.visibility = "hidden";
+      }
+      else {
+        overlay.innerHtml = "";
+        gameField.style.visibility = "visible";
+        controlField.style.visibility = "visible";
+      }
+    }
+    else {
+      print("Desktop");
+      overlay.innerHtml = "";
+      gameField.style.visibility = "visible";
+      controlField.style.visibility = "visible";
+    }
+
+    // Adjust gameTable & controlTable sizes
     int gameTableSize = getTableSize();
     print("Game Table Size: " + gameTableSize.toString());
     gameField.style.width = gameTableSize.toString() + "px";
