@@ -4,7 +4,7 @@
 part of sudokulib;
 
 class SudokuView {
-  SudokuGameGenerator model;
+  abstractSudoku model;
 
   static int gameTableRows = 9;
   static int gameTableCols = 9;
@@ -22,9 +22,8 @@ class SudokuView {
   TableElement controlField = document.getElementById("sudokuControlField");
 
 
-  SudokuView(SudokuGameGenerator model) {
+  SudokuView() {
     print("View Constructor");
-    this.model = model;
     createGameTable();
     createControlTable();
   }
@@ -127,10 +126,6 @@ class SudokuView {
     title.text = ">sudo ku";
   }
 
-  void updateOrientation() {
-
-
-  }
 
   void updateClock() {
 
@@ -202,5 +197,9 @@ class SudokuView {
     print("Control Table Size: " + controlTableSize.toString());
     controlField.style.width = controlTableSize.toString() + "px";
     controlField.style.height = controlTableSize.toString() + "px";
+  }
+
+  void setModel(abstractSudoku sudoku) {
+    this.model = sudoku;
   }
 }

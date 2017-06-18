@@ -88,7 +88,7 @@ class SudokuGameGenerator {
 
   Random random = new Random.secure();
 
-  var testSudoku = [
+  var sampleSudoku = [
     [3,4,8,7,6,2,5,1,9],
     [9,6,5,4,1,3,2,8,7],
     [2,1,7,5,9,8,3,6,4],
@@ -116,39 +116,55 @@ class SudokuGameGenerator {
     return ret;
   }
 
-  void newGame() {
+  List<List<int>> createUserSudoku(List<List<int>> sudoku) {
 
-    sudoku = new abstractSudoku();
-
-    gameFieldSolved = createSudoku();
-
-    gameField = copyList(gameFieldSolved);
+    var userSudoku = copyList(sudoku);
 
     // TODO remove fields from gameField
     // TODO just dummy implementation
     for(int i = 0; i < 3; i++) {
       int row = random.nextInt(9);
       int col = random.nextInt(9);
-      gameField[row][col] = -1;
+      userSudoku[row][col] = -1;
     }
+    return userSudoku;
+  }
 
-    // Initialize userInput list according to generated Sudoku
-    userInput = new List<List<bool>>(gameField.length);
-    for(int i = 0; i < gameField.length; i++) {
-      List<bool> list = new List(gameField[0].length);
-      for(int j = 0; j < gameField[0].length; j++) {
-        if(gameField[i][j] == -1)
+  // Returns new bool list, where every entry is true, when the corresponding field in sudoku is empty (-1)
+  List<List<bool>> createUserInputValues(List<List<int>> sudoku) {
+    var inputValues = new List<List<bool>>(sudoku.length);
+    for(int i = 0; i < sudoku.length; i++) {
+      List<bool> list = new List(sudoku[0].length);
+      for(int j = 0; j < sudoku[0].length; j++) {
+        if(sudoku[i][j] == -1)
           list[j] = true;
         else
           list[j] = false;
       }
-      userInput[i] = list;
+      inputValues[i] = list;
     }
+    return inputValues;
+  }
+
+  abstractSudoku newGame() {
+
+
+
+    // Create new solved sudoku
+    gameFieldSolved = createSudoku();
+
+    // Delete fields
+    gameField = createUserSudoku(gameFieldSolved);
+
+    // Set empty fields as userInput
+    userInput = createUserInputValues(gameField);
 
     sudoku = new abstractSudoku();
     sudoku.setGameFieldSolved(gameFieldSolved);
     sudoku.setGameField(gameField);
     sudoku.setUserInput(userInput);
+
+    return sudoku;
   }
 
   void printSudoku(List<List<int>> sudoku) {
@@ -236,7 +252,7 @@ class SudokuGameGenerator {
 
   List<List<int>> createSudoku() {
 
-    return transmorphSudoku(testSudoku);
+    return transmorphSudoku(sampleSudoku);
 
     //print("UserInput:");
     //print(userInput);

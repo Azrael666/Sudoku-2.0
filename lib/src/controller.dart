@@ -21,7 +21,7 @@ class SudokuController {
 
   SudokuController () {
     model = new SudokuGameGenerator();
-    view = new SudokuView(model);
+    view = new SudokuView();
 
     addControlStuff();
     print(window.navigator.userAgent);
@@ -61,8 +61,9 @@ class SudokuController {
 
   void newGame(e) {
     model.newGame();
-    view.update();
+    view.setModel(model.newGame());
     view.initialUpdate();
+    view.update();
   }
 
   void helpFunc(e) {
