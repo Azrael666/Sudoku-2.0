@@ -4,9 +4,10 @@
 part of sudokulib;
 
 class abstractSudoku {
-  List<List<int>> gameFieldSolved;
-  List<List<int>> gameField;
-  List<List<bool>> userInput;
+  List<List<int>> _gameFieldSolved;
+  List<List<int>> _gameField;
+  List<List<bool>> _userInput;
+  List<List<Point<int>>> _regions;
 
   int controlValue;
 
@@ -16,9 +17,9 @@ class abstractSudoku {
 
   // Checks if the player has solved the sudoku correct
   bool isSolved() {
-    for(int i = 0; i < gameFieldSolved.length; i++) {
-      for(int j = 0; j < gameFieldSolved[0].length; j++) {
-        if(gameFieldSolved[i][j] != gameField[i][j]) {
+    for(int i = 0; i < _gameFieldSolved.length; i++) {
+      for(int j = 0; j < _gameFieldSolved[0].length; j++) {
+        if(_gameFieldSolved[i][j] != _gameField[i][j]) {
           print("Solved: false");
           return false;
         }
@@ -29,27 +30,27 @@ class abstractSudoku {
   }
 
   List<List<int>> getGameFieldSolved() {
-    return this.gameFieldSolved;
+    return this._gameFieldSolved;
   }
 
   setGameFieldSolved(List<List<int>> gameField){
-    this.gameFieldSolved = gameField;
+    this._gameFieldSolved = gameField;
   }
 
   List<List<int>> getGameField() {
-    return this.gameField;
+    return this._gameField;
   }
 
   setGameField (List<List<int>> gameField){
-    this.gameField = gameField;
+    this._gameField = gameField;
   }
 
   List<List<bool>> getUserInput() {
-    return this.userInput;
+    return this._userInput;
   }
 
   setUserInput(List<List<bool>> userInput){
-    this.userInput = userInput;
+    this._userInput = userInput;
   }
 
   int getControlValue() {
@@ -60,18 +61,26 @@ class abstractSudoku {
     this.controlValue = value;
   }
 
+  List<List<Point<int>>> getRegions() {
+    return this._regions;
+  }
+
+  setRegions(List<List<Point<int>>> value) {
+    this._regions = value;
+  }
+
   void setGameCell(int row, int col) {
     print("Set GameCell " + row.toString() + " - " + col.toString());
-    print("GameCell before: " + gameField[row][col].toString());
-    print("UserInput: " + userInput[row][col].toString());
-    if(userInput[row][col]) {
-      if (gameField[row][col] == controlValue)
-        gameField[row][col] = -1;
+    print("GameCell before: " + _gameField[row][col].toString());
+    print("UserInput: " + _userInput[row][col].toString());
+    if(_userInput[row][col]) {
+      if (_gameField[row][col] == controlValue)
+        _gameField[row][col] = -1;
       else
-        gameField[row][col] = controlValue;
+        _gameField[row][col] = controlValue;
     }
 
-    print("GameCell after: " + gameField[row][col].toString());
+    print("GameCell after: " + _gameField[row][col].toString());
   }
 
 
@@ -80,15 +89,15 @@ class abstractSudoku {
 
 class SudokuGameGenerator {
 
-  abstractSudoku sudoku;
+  abstractSudoku _sudoku;
 
-  List<List<int>> gameFieldSolved;
-  List<List<int>> gameField;
-  List<List<bool>> userInput;
+  List<List<int>> _gameFieldSolved;
+  List<List<int>> _gameField;
+  List<List<bool>> _userInput;
 
-  Random random = new Random.secure();
+  Random _random = new Random.secure();
 
-  var sampleSudoku = [
+  var _sampleSudoku = [
     [3,4,8,7,6,2,5,1,9],
     [9,6,5,4,1,3,2,8,7],
     [2,1,7,5,9,8,3,6,4],
@@ -123,8 +132,8 @@ class SudokuGameGenerator {
     // TODO remove fields from gameField
     // TODO just dummy implementation
     for(int i = 0; i < 3; i++) {
-      int row = random.nextInt(9);
-      int col = random.nextInt(9);
+      int row = _random.nextInt(9);
+      int col = _random.nextInt(9);
       userSudoku[row][col] = -1;
     }
     return userSudoku;
@@ -148,23 +157,21 @@ class SudokuGameGenerator {
 
   abstractSudoku newGame() {
 
-
-
     // Create new solved sudoku
-    gameFieldSolved = createSudoku();
+    _gameFieldSolved = createSudoku();
 
     // Delete fields
-    gameField = createUserSudoku(gameFieldSolved);
+    _gameField = createUserSudoku(_gameFieldSolved);
 
     // Set empty fields as userInput
-    userInput = createUserInputValues(gameField);
+    _userInput = createUserInputValues(_gameField);
 
-    sudoku = new abstractSudoku();
-    sudoku.setGameFieldSolved(gameFieldSolved);
-    sudoku.setGameField(gameField);
-    sudoku.setUserInput(userInput);
+    _sudoku = new abstractSudoku();
+    _sudoku.setGameFieldSolved(_gameFieldSolved);
+    _sudoku.setGameField(_gameField);
+    _sudoku.setUserInput(_userInput);
 
-    return sudoku;
+    return _sudoku;
   }
 
   void printSudoku(List<List<int>> sudoku) {
@@ -202,10 +209,10 @@ class SudokuGameGenerator {
   void swapSetOfRows(List<List<int>> sudoku) {
     List<List<int>> set1 = new List<List<int>>();
     List<List<int>> set2 = new List<List<int>>();
-    int swapSet1 = random.nextInt(3);
+    int swapSet1 = _random.nextInt(3);
     int swapSet2;
     do {
-      swapSet2 = random.nextInt(3);
+      swapSet2 = _random.nextInt(3);
     } while(swapSet2 == swapSet1);
 
     print("SwapSet1: " + swapSet1.toString() + " - " + swapSet2.toString());
@@ -232,10 +239,10 @@ class SudokuGameGenerator {
   }
 
   void swap2Numbers(List<List<int>> sudoku) {
-    int swap1 = random.nextInt(9)+1;
+    int swap1 = _random.nextInt(9)+1;
     int swap2;
     do {
-      swap2 = random.nextInt(9)+1;
+      swap2 = _random.nextInt(9)+1;
     } while(swap2 == swap1);
 
     print("swap1: " + swap1.toString() + " - swap2: " + swap2.toString());
@@ -252,7 +259,7 @@ class SudokuGameGenerator {
 
   List<List<int>> createSudoku() {
 
-    return transmorphSudoku(sampleSudoku);
+    return transmorphSudoku(_sampleSudoku);
 
     //print("UserInput:");
     //print(userInput);
@@ -350,23 +357,23 @@ class SudokuGameGenerator {
   }
 
   List<List<int>> getGameField() {
-    return sudoku.getGameField();
+    return _sudoku.getGameField();
   }
 
   void setGameCell(int row, int col) {
-    sudoku.setGameCell(row, col);
+    _sudoku.setGameCell(row, col);
   }
 
   bool isSolved() {
-    return sudoku.isSolved();
+    return _sudoku.isSolved();
   }
 
   void setControlValue(String value) {
     int controlValue = int.parse(value);
-    sudoku.setControlValue(controlValue);
+    _sudoku.setControlValue(controlValue);
     print("Control Value: " + controlValue.toString());
   }
   int getControlValue() {
-    return sudoku.getControlValue();
+    return _sudoku.getControlValue();
   }
 }

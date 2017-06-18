@@ -7,21 +7,20 @@ const clockTriggerSpeed = const Duration(milliseconds: 1000);
 
 class SudokuController {
   
-  final overlay = document.getElementById("overlay");
-  final newGameButton = document.getElementById("newGameButton");
-  final helpButton = document.getElementById("helpButton");
-  bool help = false;
-  Timer orientationTrigger;
-  Timer clockTrigger;
-  int clockCount = 0;
+  final _overlay = document.getElementById("overlay");
+  final _newGameButton = document.getElementById("newGameButton");
+  final _helpButton = document.getElementById("helpButton");
+  bool _help = false;
+  Timer _clockTrigger;
+  int _clockCount = 0;
 
-  SudokuGameGenerator model;
+  SudokuGameGenerator _model;
 
-  SudokuView view;
+  SudokuView _view;
 
   SudokuController () {
-    model = new SudokuGameGenerator();
-    view = new SudokuView();
+    _model = new SudokuGameGenerator();
+    _view = new SudokuView();
 
     addControlStuff();
     print(window.navigator.userAgent);
@@ -30,10 +29,10 @@ class SudokuController {
   addControlStuff() {
     print("Add Control Stuff");
 
-    clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
+    _clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
 
-    newGameButton.addEventListener('click', newGame);
-    helpButton.addEventListener('click', helpFunc);
+    _newGameButton.addEventListener('click', newGame);
+    _helpButton.addEventListener('click', helpFunc);
 
     window.addEventListener('resize', windowResize);
 
@@ -51,24 +50,24 @@ class SudokuController {
   }
 
   void clock() {
-    clockCount++;
-    view.updateClock();
+    _clockCount++;
+    _view.updateClock();
   }
 
   void windowResize(e) {
-    view.resize();
+    _view.resize();
   }
 
   void newGame(e) {
-    model.newGame();
-    view.setModel(model.newGame());
-    view.initialUpdate();
-    view.update();
+    _model.newGame();
+    _view.setModel(_model.newGame());
+    _view.initialUpdate();
+    _view.update();
   }
 
   void helpFunc(e) {
-    help = !help;
-    view.showHelp(help);
+    _help = !_help;
+    _view.showHelp(_help);
 
   }
 
@@ -76,18 +75,18 @@ class SudokuController {
     String cellID = cell.id.substring(5);
     int cellRow = int.parse(cellID.substring(0, 1));
     int cellCol = int.parse(cellID.substring(2));
-    model.setGameCell(cellRow, cellCol);
+    _model.setGameCell(cellRow, cellCol);
 
-    view.update();
-    view.showHelp(help);
+    _view.update();
+    _view.showHelp(_help);
 
-    view.updateWin();
+    _view.updateWin();
   }
 
   void controlCell(TableCellElement cell) {
 
-    model.setControlValue(cell.text);
-    view.updateControl(cell);
-    view.showHelp(help);
+    _model.setControlValue(cell.text);
+    _view.updateControl(cell);
+    _view.showHelp(_help);
   }
 }

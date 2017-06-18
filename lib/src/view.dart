@@ -4,22 +4,22 @@
 part of sudokulib;
 
 class SudokuView {
-  abstractSudoku model;
+  abstractSudoku _model;
 
-  static int gameTableRows = 9;
-  static int gameTableCols = 9;
-  static double gameTableWidthPercent = 90.0;
-  static double gameTableHeightPercent = 60.0;
-  static int controlTableRows = 3;
-  static int controlTableCols = 3;
-  static double controlTableHeightPercent = 25.0;
+  static int _gameTableRows = 9;
+  static int _gameTableCols = 9;
+  static double _gameTableWidthPercent = 90.0;
+  static double _gameTableHeightPercent = 60.0;
+  static int _controlTableRows = 3;
+  static int _controlTableCols = 3;
+  static double _controlTableHeightPercent = 25.0;
 
-  DivElement overlay = document.getElementById("overlay");
+  DivElement _overlay = document.getElementById("overlay");
 
-  DivElement title = document.getElementById("title");
+  DivElement _title = document.getElementById("title");
 
-  TableElement gameField = document.getElementById("sudokuGameField");
-  TableElement controlField = document.getElementById("sudokuControlField");
+  TableElement _gameField = document.getElementById("sudokuGameField");
+  TableElement _controlField = document.getElementById("sudokuControlField");
 
 
   SudokuView() {
@@ -33,9 +33,9 @@ class SudokuView {
     TableElement table =  new TableElement();
     table.id = "game_table";
 
-    for(int i = 0; i < gameTableRows; i++) {
-      TableRowElement tempRow = gameField.addRow();
-      for(int j = 0; j < gameTableCols; j++) {
+    for(int i = 0; i < _gameTableRows; i++) {
+      TableRowElement tempRow = _gameField.addRow();
+      for(int j = 0; j < _gameTableCols; j++) {
         TableCellElement tableCell = tempRow.addCell();
         tableCell.id = "Game_" + i.toString() + "_" + j.toString();
         tableCell.classes.add("GameCell");
@@ -43,16 +43,16 @@ class SudokuView {
     }
     int tableSize = getTableSize();
     print("Game Table Size: " + tableSize.toString());
-    gameField.style.width = tableSize.toString() + "px";
-    gameField.style.height = tableSize.toString() + "px";
+    _gameField.style.width = tableSize.toString() + "px";
+    _gameField.style.height = tableSize.toString() + "px";
 
     print("Built Game Table");
   }
 
   int getTableSize() {
     //int tableWidth = (window.innerWidth * gameTableWidthPercent / 100).toInt();
-    int tableWidth = window.innerWidth * gameTableWidthPercent ~/ 100;
-    int tableHeight = window.innerHeight * gameTableHeightPercent ~/ 100;
+    int tableWidth = window.innerWidth * _gameTableWidthPercent ~/ 100;
+    int tableHeight = window.innerHeight * _gameTableHeightPercent ~/ 100;
 
     if(tableWidth <= tableHeight)
       return tableWidth;
@@ -66,9 +66,9 @@ class SudokuView {
     table.id = "control_table";
 
     int count = 1;
-    for(int i = 0; i < controlTableRows; i++) {
-      TableRowElement tempRow = controlField.addRow();
-      for(int j = 0; j < controlTableCols; j++) {
+    for(int i = 0; i < _controlTableRows; i++) {
+      TableRowElement tempRow = _controlField.addRow();
+      for(int j = 0; j < _controlTableCols; j++) {
         TableCellElement tableCell = tempRow.addCell();
         tableCell.id = "Control_" + i.toString() + "_" + j.toString();
         tableCell.classes.add("ControlCell");
@@ -79,17 +79,17 @@ class SudokuView {
       }
     }
 
-    int tableSize = window.innerHeight * controlTableHeightPercent ~/ 100;
+    int tableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
     print("Control Table Size: " + tableSize.toString());
-    controlField.style.width = tableSize.toString() + "px";
-    controlField.style.height = tableSize.toString() + "px";
+    _controlField.style.width = tableSize.toString() + "px";
+    _controlField.style.height = tableSize.toString() + "px";
 
     print("Built Control Table");
   }
 
   // Update DOM Tree
   void update() {
-    List<List<int>> gameField = model.getGameField();
+    List<List<int>> gameField = _model.getGameField();
 
     // Update GameField
     for(int i = 0; i < 9; i++) {
@@ -120,10 +120,10 @@ class SudokuView {
       String cellID = cell.id.substring(5);
       int cellRow = int.parse(cellID.substring(0, 1));
       int cellCol = int.parse(cellID.substring(2));
-      if(model.getGameField()[cellRow][cellCol] != -1)
+      if(_model.getGameField()[cellRow][cellCol] != -1)
       cell.classes.add("fixedGameField");
     }
-    title.text = ">sudo ku";
+    _title.text = ">sudo ku";
   }
 
 
@@ -132,10 +132,10 @@ class SudokuView {
   }
 
   void updateWin() {
-    if(model.isSolved())
-      title.text = "WIN";
+    if(_model.isSolved())
+      _title.text = "WIN";
     else
-      title.text = ">sudo ku";
+      _title.text = ">sudo ku";
   }
 
   void showHelp(bool help) {
@@ -145,7 +145,7 @@ class SudokuView {
       int cellRow = int.parse(cellID.substring(0, 1));
       int cellCol = int.parse(cellID.substring(2));
       if (help) {
-        if (model.getGameField()[cellRow][cellCol] == model.getControlValue())
+        if (_model.getGameField()[cellRow][cellCol] == _model.getControlValue())
           cell.classes.add("highlighted");
         else if (cell.classes.contains("highlighted"))
           cell.classes.remove("highlighted");
@@ -164,42 +164,42 @@ class SudokuView {
     if(isMobile.matches) {
       print("Mobile");
       if(orientationLandscape.matches) {
-        overlay.innerHtml =
+        _overlay.innerHtml =
         "<h1>"
             "Please rotate Device!"
             "</h1>"
         //"<img src='\img\Logo_Hell.png' alt='Sudoku'>"
             ;
 
-        gameField.style.visibility = "hidden";
-        controlField.style.visibility = "hidden";
+        _gameField.style.visibility = "hidden";
+        _controlField.style.visibility = "hidden";
       }
       else {
-        overlay.innerHtml = "";
-        gameField.style.visibility = "visible";
-        controlField.style.visibility = "visible";
+        _overlay.innerHtml = "";
+        _gameField.style.visibility = "visible";
+        _controlField.style.visibility = "visible";
       }
     }
     else {
       print("Desktop");
-      overlay.innerHtml = "";
-      gameField.style.visibility = "visible";
-      controlField.style.visibility = "visible";
+      _overlay.innerHtml = "";
+      _gameField.style.visibility = "visible";
+      _controlField.style.visibility = "visible";
     }
 
     // Adjust gameTable & controlTable sizes
     int gameTableSize = getTableSize();
     print("Game Table Size: " + gameTableSize.toString());
-    gameField.style.width = gameTableSize.toString() + "px";
-    gameField.style.height = gameTableSize.toString() + "px";
+    _gameField.style.width = gameTableSize.toString() + "px";
+    _gameField.style.height = gameTableSize.toString() + "px";
 
-    int controlTableSize = window.innerHeight * controlTableHeightPercent ~/ 100;
+    int controlTableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
     print("Control Table Size: " + controlTableSize.toString());
-    controlField.style.width = controlTableSize.toString() + "px";
-    controlField.style.height = controlTableSize.toString() + "px";
+    _controlField.style.width = controlTableSize.toString() + "px";
+    _controlField.style.height = controlTableSize.toString() + "px";
   }
 
   void setModel(abstractSudoku sudoku) {
-    this.model = sudoku;
+    this._model = sudoku;
   }
 }
