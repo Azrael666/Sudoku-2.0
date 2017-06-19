@@ -14,7 +14,9 @@ class SudokuView {
   static int _controlTableCols = 3;
   static double _controlTableHeightPercent = 25.0;
 
+  DivElement _warningOverlay = document.getElementById("warningOverlay");
   DivElement _overlay = document.getElementById("overlay");
+  DivElement _container = document.getElementById("container");
 
   DivElement _title = document.getElementById("title");
   DivElement _clock = document.getElementById("clock");
@@ -170,6 +172,9 @@ class SudokuView {
 
   void resize() {
 
+    _container.style.height = "100%";
+    _container.style.width = "100%";
+
     // Device Orientation
     var isMobile = window.matchMedia("only screen and (max-width: 760px)");
     var orientationLandscape = window.matchMedia("(orientation: landscape)");
@@ -177,27 +182,30 @@ class SudokuView {
     if(isMobile.matches) {
       print("Mobile");
       if(orientationLandscape.matches) {
-        _overlay.innerHtml =
+        _warningOverlay.innerHtml =
         "<h1>"
             "Please rotate Device!"
-            "</h1>"
-        //"<img src='\img\Logo_Hell.png' alt='Sudoku'>"
+        "</h1>"
+        //"<img id='logo' class='logo' alt='Sudoku'>"
             ;
 
-        _gameField.style.visibility = "hidden";
-        _controlField.style.visibility = "hidden";
+        _container.style.display = "none";
+
+
       }
       else {
-        _overlay.innerHtml = "";
-        _gameField.style.visibility = "visible";
-        _controlField.style.visibility = "visible";
+        _warningOverlay.innerHtml = "";
+        _container.style.display = "block";
+
+
       }
     }
     else {
       print("Desktop");
-      _overlay.innerHtml = "";
-      _gameField.style.visibility = "visible";
-      _controlField.style.visibility = "visible";
+
+      _warningOverlay.innerHtml = "";
+      _container.style.display = "block";
+
     }
 
     // Adjust gameTable & controlTable sizes

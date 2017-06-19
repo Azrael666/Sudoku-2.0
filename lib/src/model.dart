@@ -169,8 +169,17 @@ class SudokuGameGenerator {
 
 
   abstractSudoku newGame(GameTypes gameType) {
-
+    print(gameType);
     switch (gameType) {
+      case GameTypes.X_SUDOKU:
+        return newXSudoku();
+        break;
+      case GameTypes.HYPER_SUDOKU:
+        return newHyperSudoku();
+        break;
+      case GameTypes.MIDDELPOINT_SUDOKU:
+        return newMiddlepointSudoku();
+        break;
       case GameTypes.COLOR_SUDOKU:
         return newColorSudoku();
         break;
@@ -187,12 +196,34 @@ class SudokuGameGenerator {
 
   }
 
-  abstractSudoku newNonominoSudoku() {
-
+  //TODO implement Generator
+  abstractSudoku newXSudoku() {
+    // Dummy return value
+    return newStandardSudoku();
   }
 
-  abstractSudoku newColorSudoku() {
+  //TODO implement Generator
+  abstractSudoku newHyperSudoku() {
+    // Dummy return value
+    return newStandardSudoku();
+  }
 
+  //TODO implement Generator
+  abstractSudoku newMiddlepointSudoku() {
+    // Dummy return value
+    return newStandardSudoku();
+  }
+
+  //TODO implement Generator
+  abstractSudoku newColorSudoku() {
+    // Dummy return value
+    return newStandardSudoku();
+  }
+
+  //TODO implement Generator
+  abstractSudoku newNonominoSudoku() {
+    // Dummy return value
+    return newStandardSudoku();
   }
 
   abstractSudoku newStandardSudoku() {

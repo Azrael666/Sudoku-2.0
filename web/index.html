@@ -17,6 +17,7 @@
 </head>
 
 <body>
+    <div id="warningOverlay"></div>
     <div id="overlay">
     </div>
     <div id="container" class="container">
@@ -24,7 +25,31 @@
         <div id="clock">test</div>
         <table id="sudokuGameField"></table>
         <table id="sudokuControlField"></table>
-        <button id="newGameButton" class="button">New Game</button>
+        <table>
+            <tr>
+                <td>
+                    <button id="standardSudokuButton" class="button">Standard-Sudoku</button>
+                </td>
+                <td>
+                    <button id="xSudokuButton" class="button">X-Sudoku</button>
+                </td>
+                <td>
+                    <button id="hyperSudokuButton" class="button">Hyper-Sudoku</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="middlepointSudokuButton" class="button">Middlepoint-Sudoku</button>
+                </td>
+                <td>
+                    <button id="colorSudokuButton" class="button">Color-Sudoku</button>
+                </td>
+                <td>
+                    <button id="nonominoSudokuButton" class="button">Nonomino-Sudoku</button>
+                </td>
+            </tr>
+        </table>
+
         <button id="helpButton" class="button">Help</button>
         <p id="copyright">
             <small>
@@ -32,5 +57,6 @@
             </small>
         </p>
     </div>
+
 </body>
 </html>
