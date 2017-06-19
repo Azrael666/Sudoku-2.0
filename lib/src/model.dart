@@ -169,7 +169,105 @@ class SudokuGameGenerator {
     _sudoku.setGameField(_gameField);
     _sudoku.setUserInput(_userInput);
 
+    // Create Regions List;
+    List<List<Point<int>>> totalList = new List<List<Point<int>>>();
+    List<List<Point<int>>> rowList = getRowRegions();
+    List<List<Point<int>>> colList = getColRegions();
+    List<List<Point<int>>> areaList = getAreaRegions();
+
+    for(List<Point<int>> list in rowList) {
+      totalList.add(list);
+    }
+
+    for(List<Point<int>> list in colList) {
+      totalList.add(list);
+    }
+
+    for(List<Point<int>> list in areaList) {
+      totalList.add(list);
+    }
+
+    _sudoku.setRegions(totalList);
+
+    print("TEST - Sudoku valid?: " + isValid(totalList, _gameFieldSolved).toString());
+
     return _sudoku;
+  }
+
+  // Creates list of row coordinates (Point<int>)
+  List<List<Point<int>>>getRowRegions() {
+    List<List<Point<int>>> list = new List<List<Point<int>>>();
+    for(int i = 0; i < 9; i++) {
+      List<Point<int>> singleRow = new List<Point<int>>();
+        for(int j = 0; j < 9; j++) {
+          Point<int> cell = new Point(i, j);
+          singleRow.add(cell);
+        }
+        list.add(singleRow);
+    }
+    return list;
+  }
+
+  // Creates list of col coordinates (Point<int>)
+  List<List<Point<int>>>getColRegions() {
+    List<List<Point<int>>> list = new List<List<Point<int>>>();
+    for(int i = 0; i < 9; i++) {
+      List<Point<int>> singleRow = new List<Point<int>>();
+      for(int j = 0; j < 9; j++) {
+        Point<int> cell = new Point(j, i);
+        singleRow.add(cell);
+      }
+      list.add(singleRow);
+    }
+    return list;
+  }
+
+  // Creates list of 3x3 area coordinates (Point<int>)
+  List<List<Point<int>>>getAreaRegions() {
+    List<List<Point<int>>> list = new List<List<Point<int>>>();
+
+    for(int i = 0; i < 9; i += 3) {
+      for(int j = 0; j < 9; j += 3) {
+        list.add(getSpecificArea(i, i+3, j, j+3));
+      }
+    }
+
+    return list;
+  }
+
+
+  // returns specific 3x3 area of the sudoku
+  List<Point<int>> getSpecificArea(int rowStart, int rowEnd, int colStart, int colEnd) {
+    List<Point<int>> area = new List<Point<int>>();
+
+    for(int i = rowStart; i < rowEnd; i++) {
+      for(int j = colStart; j < colEnd; j++) {
+        area.add(new Point(i, j));
+      }
+    }
+    return area;
+  }
+
+  bool isValid(List<List<Point<int>>> regions, List<List<int>> sudoku) {
+    for(List<Point<int>> list in regions) {
+        if(!checkRegion(list, sudoku)) {
+          return false;
+        }
+    }
+    return true;
+  }
+
+  bool checkRegion(List<Point<int>> region, List<List<int>> sudoku) {
+
+      List<int> values = new List<int>();
+      for(Point<int> point in region) {
+        values.add(sudoku[point.x][point.y]);
+      }
+      for(int i = 1; i < 10; i++) {
+        if(!values.contains(i))
+          return false;
+      }
+      return true;
   }
 
   void printSudoku(List<List<int>> sudoku) {
@@ -200,8 +298,6 @@ class SudokuGameGenerator {
     // swap two numbers in total
     for(int i = 0; i < 20; i++)
       swap2Numbers(tempSudoku);
-
-    print("Sudoku valid?: " + isValid(tempSudoku).toString());
 
     return tempSudoku;
   }
@@ -272,36 +368,6 @@ class SudokuGameGenerator {
     //print(userInput);
   }
 
-
-
-  // checks if the given sudoku is valid
-  bool isValid(List<List<int>> sudoku) {
-    for(int i = 1; i < 4; i++) {
-      if(!checkRegion(getRegion(sudoku, i))) {
-        print(i);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // returns specific region of given sudoku
-  List<List<int>> getRegion(List<List<int>> sudoku, int regionNumber) {
-    switch (regionNumber) {
-      case 3: // 3x3 Areas
-        return get3x3Area(sudoku);
-        break;
-
-      case 2: // COLS
-        return transposeMatrix(sudoku);
-        break;
-
-      case 1: // ROWS
-      default:
-        return sudoku;
-    }
-  }
-
   // returns transposed matrix
   List<List<int>> transposeMatrix(List<List<int>> matrix) {
     // Initialize List
@@ -319,42 +385,6 @@ class SudokuGameGenerator {
     return transposedMatrix;
   }
 
-  // returns sudoku sorted by specific areas
-  List<List<int>> get3x3Area(List<List<int>> matrix) {
-    List<List<int>> areaList = new List<List<int>>();
-
-    for(int i = 1; i < 10; i += 3) {
-      for(int j = 1; j < 10; j += 3) {
-        areaList.add(getSpecificArea(matrix, i, i+2, j, j+2));
-      }
-    }
-
-    return areaList;
-  }
-
-  // returns specific 3x3 area of the sudoku
-  List<int> getSpecificArea(List<List<int>> matrix, int rowStart, int rowEnd, int colStart, int colEnd) {
-    List<int> area = new List<int>();
-
-    for(int i = rowStart-1; i < rowEnd; i++) {
-      for(int j = colStart-1; j < colEnd; j++) {
-        area.add(matrix[i][j]);
-      }
-    }
-    return area;
-  }
-
-  // checks if the given region is valid
-  bool checkRegion(List<List<int>> region) {
-    for(List<int> regionElement in region) {
-      for(int i = regionElement[0]; i < regionElement.length; i++) {
-        if(!regionElement.contains(i)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
 
   // TODO implementation
   // returns amount of possible solutions for given sudoku
