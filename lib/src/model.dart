@@ -4,13 +4,13 @@
 part of sudokulib;
 
 enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
+enum GameTypes {STANDARD_SUDOKU, X_SUDOKU, HYPER_SUDOKU, MIDDELPOINT_SUDOKU, COLOR_SUDOKU, NONOMINO_SUDOKU}
 
 class abstractSudoku {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
   List<List<Point<int>>> _regions;
-  // TODO implement initial creation & view update
   List<List<Colors>> _colors;
 
   int _controlValue;
@@ -141,7 +141,7 @@ class SudokuGameGenerator {
     var userSudoku = copyList(sudoku);
 
     // TODO remove fields from gameField
-    // TODO just dummy implementation
+    // Currently just dummy implementation
     for(int i = 0; i < 3; i++) {
       int row = _random.nextInt(9);
       int col = _random.nextInt(9);
@@ -166,7 +166,36 @@ class SudokuGameGenerator {
     return inputValues;
   }
 
-  abstractSudoku newGame() {
+
+
+  abstractSudoku newGame(GameTypes gameType) {
+
+    switch (gameType) {
+      case GameTypes.COLOR_SUDOKU:
+        return newColorSudoku();
+        break;
+      case GameTypes.NONOMINO_SUDOKU:
+        return newNonominoSudoku();
+        break;
+
+      case GameTypes.STANDARD_SUDOKU:
+      default:
+        return newStandardSudoku();
+        break;
+    }
+
+
+  }
+
+  abstractSudoku newNonominoSudoku() {
+
+  }
+
+  abstractSudoku newColorSudoku() {
+
+  }
+
+  abstractSudoku newStandardSudoku() {
 
     // Create new solved sudoku
     _gameFieldSolved = createSudoku();

@@ -59,7 +59,7 @@ class SudokuController {
   }
 
   void newGame(e) {
-    _view.setModel(_model.newGame());
+    _view.setModel(_model.newGame(GameTypes.STANDARD_SUDOKU));
     _view.initialUpdate();
     _view.update();
     _view.showHelp(_help);
