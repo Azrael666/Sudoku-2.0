@@ -23,10 +23,6 @@ html, body {
     background-color: greenyellow;
 }
 
-.highlighted {
-    background-color: gold;
-}
-
 .button {
     width: 100px;
     height: 20px;
@@ -36,6 +32,55 @@ html, body {
 
 .ControlCell {
     font-size: 150%;
+}
+
+.COLOR_STANDARD {
+    background-color: white;
+}
+
+.COLOR_STANDARD_DARK {
+    background-color: lightgray;
+}
+
+.COLOR_1 {
+    background-color: indianred;
+}
+
+.COLOR_2 {
+    background-color: dimgrey;
+}
+
+.COLOR_3 {
+    background-color: yellowgreen;
+}
+
+.COLOR_4 {
+    background-color: coral;
+}
+
+.COLOR_5 {
+    background-color: turquoise;
+}
+
+.COLOR_6 {
+    background-color: cornflowerblue;
+}
+
+.COLOR_7 {
+    background-color: darkorange;
+}
+
+.COLOR_8 {
+    background-color: hotpink;
+}
+
+.COLOR_9 {
+    background-color: beige;
+}
+
+.highlighted {
+    background-color: gold;
+    //border-color: red;
 }
 
 #title {

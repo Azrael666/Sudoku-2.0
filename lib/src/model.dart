@@ -3,16 +3,21 @@
 
 part of sudokulib;
 
+enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
+
 class abstractSudoku {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
   List<List<Point<int>>> _regions;
+  // TODO implement initial creation & view update
+  List<List<Colors>> _colors;
 
-  int controlValue;
+  int _controlValue;
 
   abstractSudoku() {
-    controlValue = 1;
+    _controlValue = 1;
+
   }
 
   // Checks if the player has solved the sudoku correct
@@ -54,11 +59,11 @@ class abstractSudoku {
   }
 
   int getControlValue() {
-    return this.controlValue;
+    return this._controlValue;
   }
 
   setControlValue(int value) {
-    this.controlValue = value;
+    this._controlValue = value;
   }
 
   List<List<Point<int>>> getRegions() {
@@ -69,15 +74,23 @@ class abstractSudoku {
     this._regions = value;
   }
 
+  List<List<Colors>> getColors() {
+    return this._colors;
+  }
+
+  setColors(List<List<Colors>> colors) {
+    this._colors = colors;
+  }
+
   void setGameCell(int row, int col) {
     print("Set GameCell " + row.toString() + " - " + col.toString());
     print("GameCell before: " + _gameField[row][col].toString());
     print("UserInput: " + _userInput[row][col].toString());
     if(_userInput[row][col]) {
-      if (_gameField[row][col] == controlValue)
+      if (_gameField[row][col] == _controlValue)
         _gameField[row][col] = -1;
       else
-        _gameField[row][col] = controlValue;
+        _gameField[row][col] = _controlValue;
     }
 
     print("GameCell after: " + _gameField[row][col].toString());
@@ -190,6 +203,54 @@ class SudokuGameGenerator {
     _sudoku.setRegions(totalList);
 
     print("TEST - Sudoku valid?: " + isValid(totalList, _gameFieldSolved).toString());
+
+    // Create Colors
+    List<List<Colors>> colors = new List<List<Colors>>(_gameFieldSolved.length);
+    for(int i = 0; i < _gameFieldSolved.length; i++) {
+      List<Colors> colorRow  = new List<Colors>(_gameFieldSolved[0].length);
+      for(int j = 0; j < _gameFieldSolved[0].length; j++) {
+
+        // Test Colors
+        switch(j) {
+          case 0:
+            colorRow[j] = Colors.COLOR_1;
+            break;
+          case 1:
+            colorRow[j] = Colors.COLOR_2;
+            break;
+          case 2:
+            colorRow[j] = Colors.COLOR_3;
+            break;
+          case 3:
+            colorRow[j] = Colors.COLOR_4;
+            break;
+          case 4:
+            colorRow[j] = Colors.COLOR_5;
+            break;
+          case 5:
+            colorRow[j] = Colors.COLOR_6;
+            break;
+          case 6:
+            colorRow[j] = Colors.COLOR_7;
+            break;
+          case 7:
+            colorRow[j] = Colors.COLOR_8;
+            break;
+          case 8:
+            colorRow[j] = Colors.COLOR_9;
+            break;
+        }
+
+        // Standard Colors
+        if((i >= 3 && i <= 5 && (j < 3 || j > 5)) || (j >= 3 && j <= 5 && (i < 3 || i > 5)))
+          colorRow[j] = Colors.COLOR_STANDARD_DARK;
+        else
+          colorRow[j] = Colors.COLOR_STANDARD;
+
+      }
+      colors[i] = colorRow;
+    }
+    _sudoku.setColors(colors);
 
     return _sudoku;
   }

@@ -132,6 +132,9 @@ class SudokuView {
       int cellCol = int.parse(cellID.substring(2));
       if(_model.getGameField()[cellRow][cellCol] != -1)
       cell.classes.add("fixedGameField");
+      String color = _model.getColors()[cellRow][cellCol].toString();
+      color = color.substring(7);
+      cell.classes.add(color);
     }
     _title.text = ">sudo ku";
   }
