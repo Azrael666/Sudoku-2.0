@@ -3,15 +3,22 @@
 
 part of sudokulib;
 
-const clockTriggerSpeed = const Duration(milliseconds: 1000);
+
 
 class SudokuController {
   
   final _overlay = document.getElementById("overlay");
-  final _newGameButton = document.getElementById("newGameButton");
+  final _standardSudokuButton = document.getElementById("standardSudokuButton");
+  final _xSudokuButton = document.getElementById("xSudokuButton");
+  final _hyperSudokuButton = document.getElementById("hyperSudokuButton");
+  final _middlepointSudokuButton = document.getElementById("middlepointSudokuButton");
+  final _colorSudokuButton = document.getElementById("colorSudokuButton");
+  final _nonominoSudokuButton = document.getElementById("nonominoSudokuButton");
   final _helpButton = document.getElementById("helpButton");
   bool _help = false;
-  Timer _clockTrigger;
+
+  final clockTriggerSpeed = const Duration(milliseconds: 1000);
+  Timer clockTrigger;
   int _clockCount = 0;
 
   SudokuGameGenerator _model;
@@ -29,9 +36,15 @@ class SudokuController {
   addControlStuff() {
     print("Add Control Stuff");
 
-    _clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
+    clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
 
-    _newGameButton.addEventListener('click', newGame);
+    _standardSudokuButton.addEventListener('click', newStandardSudoku);
+    _xSudokuButton.addEventListener('click', newXSudoku);
+    _hyperSudokuButton.addEventListener('click', newHyperSudoku);
+    _middlepointSudokuButton.addEventListener('click', newMiddlepointSudoku);
+    _colorSudokuButton.addEventListener('click', newColorSudoku);
+    _nonominoSudokuButton.addEventListener('click', newNonominoSudoku);
+
     _helpButton.addEventListener('click', helpFunc);
 
     window.addEventListener('resize', windowResize);
@@ -58,8 +71,32 @@ class SudokuController {
     _view.resize();
   }
 
-  void newGame(e) {
-    _view.setModel(_model.newGame(GameTypes.STANDARD_SUDOKU));
+  void newStandardSudoku(e) {
+    newGame(GameTypes.STANDARD_SUDOKU);
+  }
+
+  void newXSudoku(e) {
+    newGame(GameTypes.X_SUDOKU);
+  }
+
+  void newHyperSudoku(e) {
+    newGame(GameTypes.HYPER_SUDOKU);
+  }
+
+  void newMiddlepointSudoku(e) {
+    newGame(GameTypes.MIDDELPOINT_SUDOKU);
+  }
+
+  void newColorSudoku(e) {
+    newGame(GameTypes.COLOR_SUDOKU);
+  }
+
+  void newNonominoSudoku(e) {
+    newGame(GameTypes.NONOMINO_SUDOKU);
+  }
+
+  void newGame(GameTypes gameType) {
+    _view.setModel(_model.newGame(gameType));
     _view.initialUpdate();
     _view.update();
     _view.showHelp(_help);
