@@ -11,6 +11,12 @@ html, body {
 }
 
 
+#sudokuGameField {
+    background-color: bisque;
+
+    border-collapse: collapse;
+}
+
 .warningOverlay {
     display: none;
     position: absolute;
@@ -44,10 +50,11 @@ html, body {
     background-image: url("img/Logo_Hell.png");
     //background-size: auto 100%;
 }
-
 .fixedGameField {
+    border-collapse: collapse;
     font-weight: bold;
     font-size: 150%;
+
 }
 
 .selectedControl {
@@ -144,6 +151,9 @@ table {
 }
 
 td {
+    border-collapse: collapse;
+    margin: 0px;
+    padding: 0px;
     border: 1px solid;
     text-align: center;
     font-size: 100%;
