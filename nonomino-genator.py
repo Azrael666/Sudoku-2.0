@@ -47,7 +47,7 @@ def get_list():
 			print("col1,col2:",str(col1),str(col2))
 
 
-	for i in range(10,10+random.randint(0,20)):
+	for i in range(100,100+random.randint(0,20)):
 		swap_cols()
 		swap_rows()
 
