@@ -246,7 +246,7 @@ class SudokuGameGenerator {
   //TODO implement Generator
   abstractSudoku newNonominoSudoku() {
     // Dummy return value
-    Map level = JSON.decode(jsonLevelFiles[0]);
+    Map level = JSON.decode(jsonLevelFiles[1]);
 
     abstractSudoku sudoku = new abstractSudoku();
 
