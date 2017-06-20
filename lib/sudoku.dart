@@ -3,8 +3,9 @@
 
 library sudokulib;
 
-import 'dart:html';
 import 'dart:async';
+import 'dart:html';
+import 'dart:convert';
 import 'dart:math';
 
 part 'src/model.dart';

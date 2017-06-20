@@ -126,9 +126,12 @@ class SudokuView {
     actualCell.classes.add("selectedControl");
   }
 
+  //TODO fix colors
   void initialUpdate() {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
     for(TableCellElement cell in gameCells) {
+      cell.classes.clear();
+      cell.classes.add("COLOR_STANDARD");
       String cellID = cell.id.substring(5);
       int cellRow = int.parse(cellID.substring(0, 1));
       int cellCol = int.parse(cellID.substring(2));

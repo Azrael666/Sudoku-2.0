@@ -105,6 +105,8 @@ class SudokuGameGenerator {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
+  List<String> jsonPaths;
+  List<String> jsonLevelFiles;
 
   Random _random = new Random.secure();
 
@@ -121,7 +123,28 @@ class SudokuGameGenerator {
   ];
 
   SudokuGameGenerator() {
+    initialize();
+  }
 
+  void initialize() {
+    jsonLevelFiles = new List<String>();
+
+    String folder = "nonomino";
+    for (int i = 1; i < 4; i++) {
+      String path = "../levels/" + folder + "/level" + i.toString() + ".json";
+      loadJsonFiles(path);
+    }
+
+  }
+
+
+  loadJsonFiles(String path) async {
+    await HttpRequest.getString(path).then((content) => addLevelToList(content, path));
+  }
+
+  void addLevelToList(String content, String path) {
+    jsonLevelFiles.add(content);
+    print("Loaded File: " + path);
   }
 
   List<List<int>> copyList(List<List<int>> copyList) {
@@ -151,12 +174,12 @@ class SudokuGameGenerator {
   }
 
   // Returns new bool list, where every entry is true, when the corresponding field in sudoku is empty (-1)
-  List<List<bool>> createUserInputValues(List<List<int>> sudoku) {
+  List<List<bool>> createUserInputValues(List<List<int>> sudoku, int emptyValue) {
     var inputValues = new List<List<bool>>(sudoku.length);
     for(int i = 0; i < sudoku.length; i++) {
       List<bool> list = new List(sudoku[0].length);
       for(int j = 0; j < sudoku[0].length; j++) {
-        if(sudoku[i][j] == -1)
+        if(sudoku[i][j] == emptyValue)
           list[j] = true;
         else
           list[j] = false;
@@ -223,7 +246,86 @@ class SudokuGameGenerator {
   //TODO implement Generator
   abstractSudoku newNonominoSudoku() {
     // Dummy return value
-    return newStandardSudoku();
+    Map level = JSON.decode(jsonLevelFiles[0]);
+
+    abstractSudoku sudoku = new abstractSudoku();
+
+    List<List<int>> gameFieldSolved = level["fields"];
+    List<List<bool>> userInput = createUserInputValues(level["empty"], 1);
+    List<List<int>> gameField = getGameFieldFromFile(createUserSudoku(gameFieldSolved), userInput);;
+
+    // Create Regions List;
+    // TODO add color regions
+    List<List<Point<int>>> totalList = new List<List<Point<int>>>();
+    List<List<Point<int>>> rowList = getRowRegions();
+    List<List<Point<int>>> colList = getColRegions();
+
+    for(List<Point<int>> list in rowList) {
+      totalList.add(list);
+    }
+
+    for(List<Point<int>> list in colList) {
+      totalList.add(list);
+    }
+
+
+    // Set colors
+    List<List<int>> colorsFile = level["colors"];
+    List<List<Colors>> colors = new List<List<Colors>>(gameFieldSolved.length);
+
+    for(int i = 0; i < colorsFile.length; i++) {
+      List<Colors> colorRow = new List<Colors>(colorsFile[0].length);
+      for (int j = 0; j < colorsFile[0].length; j++) {
+
+        switch (colorsFile[i][j]) {
+          case 0:
+            colorRow[j] = Colors.COLOR_1;
+            break;
+          case 1:
+            colorRow[j] = Colors.COLOR_2;
+            break;
+          case 2:
+            colorRow[j] = Colors.COLOR_3;
+            break;
+          case 3:
+            colorRow[j] = Colors.COLOR_4;
+            break;
+          case 4:
+            colorRow[j] = Colors.COLOR_5;
+            break;
+          case 5:
+            colorRow[j] = Colors.COLOR_6;
+            break;
+          case 6:
+            colorRow[j] = Colors.COLOR_7;
+            break;
+          case 7:
+            colorRow[j] = Colors.COLOR_8;
+            break;
+          case 8:
+            colorRow[j] = Colors.COLOR_9;
+            break;
+        }
+      }
+      colors[i] = colorRow;
+    }
+
+    sudoku.setGameFieldSolved(gameFieldSolved);
+    sudoku.setGameField(gameField);
+    sudoku.setUserInput(userInput);
+    sudoku.setRegions(totalList);
+    sudoku.setColors(colors);
+
+
+
+    print("Difficulty: " + level["difficulty"]);
+    print("GamefieldSolved:");
+    printSudoku(gameFieldSolved);
+    print("Gamefield:");
+    printSudoku(gameField);
+    print("UserInput: " + userInput.toString());
+
+    return sudoku;
   }
 
   abstractSudoku newStandardSudoku() {
@@ -235,7 +337,7 @@ class SudokuGameGenerator {
     _gameField = createUserSudoku(_gameFieldSolved);
 
     // Set empty fields as userInput
-    _userInput = createUserInputValues(_gameField);
+    _userInput = createUserInputValues(_gameField, -1);
 
     _sudoku = new abstractSudoku();
     _sudoku.setGameFieldSolved(_gameFieldSolved);
@@ -313,6 +415,17 @@ class SudokuGameGenerator {
     _sudoku.setColors(colors);
 
     return _sudoku;
+  }
+
+  List<List<int>> getGameFieldFromFile(List<List<int>> sudokuSolved, List<List<bool>> userInputValues) {
+    List<List<int>> gameField = copyList(sudokuSolved);
+    for(int i = 0; i < userInputValues.length; i++) {
+      for(int j = 0; j < userInputValues[0].length; j++) {
+        if(userInputValues[i][j])
+          gameField[i][j] = -1;
+      }
+    }
+    return gameField;
   }
 
   // Creates list of row coordinates (Point<int>)

@@ -30,7 +30,8 @@ class SudokuController {
     _view = new SudokuView();
 
     addControlStuff();
-    print(window.navigator.userAgent);
+    //print(window.navigator.userAgent);
+    
   }
 
   addControlStuff() {
