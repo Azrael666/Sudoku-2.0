@@ -42,6 +42,10 @@ class SudokuView {
         TableCellElement tableCell = tempRow.addCell();
         tableCell.id = "Game_" + i.toString() + "_" + j.toString();
         tableCell.classes.add("GameCell");
+
+
+
+
       }
     }
     int tableSize = getTableSize();
@@ -63,6 +67,7 @@ class SudokuView {
     return tableHeight;
   }
 
+
   void createControlTable() {
     print("Create Control Table");
     TableElement table =  new TableElement();
@@ -76,6 +81,12 @@ class SudokuView {
         tableCell.id = "Control_" + i.toString() + "_" + j.toString();
         tableCell.classes.add("ControlCell");
         tableCell.text = count.toString();
+
+
+
+
+
+
         if(i == 0 && j == 0)
           tableCell.classes.add("selectedControl");
         count++;
@@ -140,8 +151,64 @@ class SudokuView {
       String color = _model.getColors()[cellRow][cellCol].toString();
       color = color.substring(7);
       cell.classes.add(color);
+
+
+      if(_model.getSides() != null){
+        Sides s= _model.getSides()[cellRow][cellCol];
+
+        cell.dataset.putIfAbsent("col", ()=>"$cellCol");
+        cell.dataset.putIfAbsent("row", ()=>"$cellRow");
+        cell.dataset.putIfAbsent("sides", ()=>"$s");
+
+
+
+
+        cell.style.borderLeft = (s.left==BorderType.THIN)?"inset":"solid";
+        cell.style.borderBottom = (s.bottom==BorderType.THIN)?"inset":"solid";
+        cell.style.borderRight = (s.right==BorderType.THIN)?"inset":"solid";
+        cell.style.borderTop = (s.top==BorderType.THIN)?"inset":"solid";
+
+      }
+
+
+
+
+
     }
     _title.text = ">sudo ku";
+
+/*
+    for(int i=0;i<9;i++){
+      for(int i1=0;i1<9;i1++){
+        TableCellElement tableCell;
+        if(i*9+i1<gameCells.length)
+          tableCell = gameCells[i*9+i1];
+        else
+          print("index out of bounds, length:${gameCells.length}");
+
+
+        Sides s;
+        if(_model!=null)
+          if(_model.getSides()!=null)
+            s=_model.getSides()[i][i1];
+          else
+            print("sides was null");
+        else
+          print("model was null");
+
+
+        if( tableCell!=null && s != null){
+
+
+          tableCell.style.borderLeft = (s.left==BorderType.THIN)?"solid":"double";
+          tableCell.style.borderBottom = (s.bottom==BorderType.THIN)?"solid":"double";
+          tableCell.style.borderRight = (s.right==BorderType.THIN)?"solid":"double";
+          tableCell.style.borderTop = (s.top==BorderType.THIN)?"solid":"double";
+
+        }
+
+      }
+    }*/
   }
 
 

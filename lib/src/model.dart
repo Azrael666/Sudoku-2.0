@@ -6,12 +6,27 @@ part of sudokulib;
 enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
 enum GameTypes {STANDARD_SUDOKU, X_SUDOKU, HYPER_SUDOKU, MIDDELPOINT_SUDOKU, COLOR_SUDOKU, NONOMINO_SUDOKU}
 
+
+enum BorderType {THICK,THIN}
+
+class Sides{
+  BorderType left,bottom,right,top;
+
+  int row,col;
+
+  toString() =>"left: $left, bottom:$bottom, right:$right, top:$top ($row,$col)";
+}
+
+
+
 class abstractSudoku {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
   List<List<Point<int>>> _regions;
   List<List<Colors>> _colors;
+
+  List<List<Sides>> _sides;
 
   int _controlValue;
 
@@ -76,6 +91,13 @@ class abstractSudoku {
 
   List<List<Colors>> getColors() {
     return this._colors;
+  }
+
+  List<List<Sides>> getSides() {
+    return this._sides;
+  }
+  setSides(List<List<Sides>> sides){
+    this._sides= sides;
   }
 
   setColors(List<List<Colors>> colors) {
@@ -310,6 +332,10 @@ class SudokuGameGenerator {
       colors[i] = colorRow;
     }
 
+
+
+
+
     sudoku.setGameFieldSolved(gameFieldSolved);
     sudoku.setGameField(gameField);
     sudoku.setUserInput(userInput);
@@ -412,6 +438,30 @@ class SudokuGameGenerator {
       }
       colors[i] = colorRow;
     }
+
+
+    List<List<Sides>> sides = new List();
+    for(int i=0;i<9;i++){
+      List<Sides> lis = new List();
+      for(int i1=0;i1<9;i1++){
+        Sides s= new Sides();
+        s.left = (i1%3==0) ?BorderType.THICK:BorderType.THIN;
+        s.right = (i1%3==2) ? BorderType.THICK:BorderType.THIN;
+        s.top = (i%3==0)?BorderType.THICK:BorderType.THIN;
+        s.bottom = (i%3==2)?BorderType.THICK:BorderType.THIN;
+
+
+        s.row=i;
+        s.col=i1;
+        lis.add(s);
+      }
+      sides.add(lis);
+
+
+    }
+    _sudoku.setSides(sides);
+
+
     _sudoku.setColors(colors);
 
     return _sudoku;
