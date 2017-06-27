@@ -333,6 +333,38 @@ class SudokuGameGenerator {
     }
 
 
+    List<List<Sides>> sides = new List();
+    for(int i=0;i<9;i++){
+      List<Sides> lis = new List();
+      for(int i1=0;i1<9;i1++){
+
+        Sides s= new Sides();
+        s.left = s.right = s.top = s.bottom = BorderType.THIN;
+
+
+        if((i1==0) || ((i1-1)>=0  && colors[i][i1]!= colors[i][i1-1]))
+          s.left = BorderType.THICK;
+
+        if ((i1==8) || (i1+1)<=8 && colors[i][i1]!=colors[i][i1+1])
+          s.right = BorderType.THICK;
+
+        if((i==0) || (i-1)>=0 && colors[i][i1]!=colors[i-1][i1])
+          s.top = BorderType.THICK;
+
+        if((i==8) || (i+1)<=8 && colors[i][i1]!=colors[i+1][i1])
+          s.bottom = BorderType.THICK;
+
+
+        s.row=i;
+        s.col=i1;
+        lis.add(s);
+      }
+      sides.add(lis);
+
+
+    }
+    sudoku.setSides(sides);
+
 
 
 
