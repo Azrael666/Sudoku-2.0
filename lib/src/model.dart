@@ -19,7 +19,7 @@ class Sides{
 
 
 
-class abstractSudoku {
+class SudokuAdapter {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
@@ -28,12 +28,9 @@ class abstractSudoku {
 
   List<List<Sides>> _sides;
 
-  int _controlValue;
+  int _controlValue = 1;
 
-  abstractSudoku() {
-    _controlValue = 1;
-
-  }
+  SudokuAdapter() {}
 
   // Checks if the player has solved the sudoku correct
   bool isSolved() {
@@ -105,7 +102,7 @@ class abstractSudoku {
   }
 
   void setGameCell(int row, int col) {
-    print("Set GameCell " + row.toString() + " - " + col.toString());
+    print("Set GameCell row" + row.toString() + " - col" + col.toString());
     print("GameCell before: " + _gameField[row][col].toString());
     print("UserInput: " + _userInput[row][col].toString());
     if(_userInput[row][col]) {
@@ -114,7 +111,19 @@ class abstractSudoku {
       else
         _gameField[row][col] = _controlValue;
     }
+    else{
 
+      print("user input was false");
+      print("userinput hash in model:${_userInput.hashCode}");
+      print("length of userinput:${_userInput.length}");
+      int i =0;
+      for(var lis in _userInput) {
+        print("${lis.map((bol) => bol == true ? 1 : 0)} $i");
+        i += 1;
+      }
+        //print((lis) => "\n${lis.map((bol)=> bol==true?1:0)}");
+      //print(_userInput.map((lis) => "\n${lis.map((bol)=> bol==true?1:0)}"));
+    }
     print("GameCell after: " + _gameField[row][col].toString());
   }
 
@@ -122,11 +131,7 @@ class abstractSudoku {
 
 class SudokuGameGenerator {
 
-  abstractSudoku _sudoku;
 
-  List<List<int>> _gameFieldSolved;
-  List<List<int>> _gameField;
-  List<List<bool>> _userInput;
   List<String> jsonPaths;
   List<String> jsonLevelFiles;
 
@@ -181,7 +186,7 @@ class SudokuGameGenerator {
     return ret;
   }
 
-  List<List<int>> createUserSudoku(List<List<int>> sudoku) {
+  List<List<int>> deleteRandomFields(List<List<int>> sudoku) {
 
     var userSudoku = copyList(sudoku);
 
@@ -197,23 +202,32 @@ class SudokuGameGenerator {
 
   // Returns new bool list, where every entry is true, when the corresponding field in sudoku is empty (-1)
   List<List<bool>> createUserInputValues(List<List<int>> sudoku, int emptyValue) {
-    var inputValues = new List<List<bool>>(sudoku.length);
-    for(int i = 0; i < sudoku.length; i++) {
-      List<bool> list = new List(sudoku[0].length);
-      for(int j = 0; j < sudoku[0].length; j++) {
-        if(sudoku[i][j] == emptyValue)
-          list[j] = true;
-        else
-          list[j] = false;
+    var inputValues = new List<List<bool>>();
+
+    //prepare the list
+    for(int i=0;i<9;i++){
+      List<bool> lis = new List();
+      for(int i1=0;i1<9;i1++){
+        lis.add(false);
       }
-      inputValues[i] = list;
+      inputValues.add(lis);
+    }
+
+    //write the list
+    for(int i = 0; i < 9; i++) {
+      for(int j = 0; j < 9; j++) {
+        if(sudoku[i][j] == emptyValue)
+          inputValues[i][j] = true;
+        else
+          inputValues[i][j] = false;
+      }
     }
     return inputValues;
   }
 
 
 
-  abstractSudoku newGame(GameTypes gameType) {
+  SudokuAdapter newGame(GameTypes gameType) {
     print(gameType);
     switch (gameType) {
       case GameTypes.X_SUDOKU:
@@ -242,39 +256,39 @@ class SudokuGameGenerator {
   }
 
   //TODO implement Generator
-  abstractSudoku newXSudoku() {
+  SudokuAdapter newXSudoku() {
     // Dummy return value
     return newStandardSudoku();
   }
 
   //TODO implement Generator
-  abstractSudoku newHyperSudoku() {
+  SudokuAdapter newHyperSudoku() {
     // Dummy return value
     return newStandardSudoku();
   }
 
   //TODO implement Generator
-  abstractSudoku newMiddlepointSudoku() {
+  SudokuAdapter newMiddlepointSudoku() {
     // Dummy return value
     return newStandardSudoku();
   }
 
   //TODO implement Generator
-  abstractSudoku newColorSudoku() {
+  SudokuAdapter newColorSudoku() {
     // Dummy return value
     return newStandardSudoku();
   }
 
   //TODO implement Generator
-  abstractSudoku newNonominoSudoku() {
+  SudokuAdapter newNonominoSudoku() {
     // Dummy return value
     Map level = JSON.decode(jsonLevelFiles[1]);
 
-    abstractSudoku sudoku = new abstractSudoku();
+    SudokuAdapter sudoku = new SudokuAdapter();
 
     List<List<int>> gameFieldSolved = level["fields"];
     List<List<bool>> userInput = createUserInputValues(level["empty"], 1);
-    List<List<int>> gameField = getGameFieldFromFile(createUserSudoku(gameFieldSolved), userInput);;
+    List<List<int>> gameField = getGameFieldFromFile(deleteRandomFields(gameFieldSolved), userInput);
 
     // Create Regions List;
     // TODO add color regions
@@ -386,18 +400,23 @@ class SudokuGameGenerator {
     return sudoku;
   }
 
-  abstractSudoku newStandardSudoku() {
+  SudokuAdapter newStandardSudoku() {
+    SudokuAdapter _sudoku = new SudokuAdapter();
+
+    List<List<int>> _gameFieldSolved;
+    List<List<int>> _gameField;
+    List<List<bool>> _userInput;
+
 
     // Create new solved sudoku
     _gameFieldSolved = createSudoku();
 
     // Delete fields
-    _gameField = createUserSudoku(_gameFieldSolved);
+    _gameField = deleteRandomFields(_gameFieldSolved);
 
     // Set empty fields as userInput
     _userInput = createUserInputValues(_gameField, -1);
 
-    _sudoku = new abstractSudoku();
     _sudoku.setGameFieldSolved(_gameFieldSolved);
     _sudoku.setGameField(_gameField);
     _sudoku.setUserInput(_userInput);
@@ -422,7 +441,6 @@ class SudokuGameGenerator {
 
     _sudoku.setRegions(totalList);
 
-    print("TEST - Sudoku valid?: " + isValid(totalList, _gameFieldSolved).toString());
 
     // Create Colors
     List<List<Colors>> colors = new List<List<Colors>>(_gameFieldSolved.length);
@@ -564,27 +582,7 @@ class SudokuGameGenerator {
     return area;
   }
 
-  bool isValid(List<List<Point<int>>> regions, List<List<int>> sudoku) {
-    for(List<Point<int>> list in regions) {
-        if(!checkRegion(list, sudoku)) {
-          return false;
-        }
-    }
-    return true;
-  }
 
-  bool checkRegion(List<Point<int>> region, List<List<int>> sudoku) {
-
-      List<int> values = new List<int>();
-      for(Point<int> point in region) {
-        values.add(sudoku[point.x][point.y]);
-      }
-      for(int i = 1; i < 10; i++) {
-        if(!values.contains(i))
-          return false;
-      }
-      return true;
-  }
 
   void printSudoku(List<List<int>> sudoku) {
     for(List<int> i in sudoku) {
@@ -709,24 +707,8 @@ class SudokuGameGenerator {
     return 1;
   }
 
-  List<List<int>> getGameField() {
-    return _sudoku.getGameField();
-  }
 
-  void setGameCell(int row, int col) {
-    _sudoku.setGameCell(row, col);
-  }
 
-  bool isSolved() {
-    return _sudoku.isSolved();
-  }
 
-  void setControlValue(String value) {
-    int controlValue = int.parse(value);
-    _sudoku.setControlValue(controlValue);
-    print("Control Value: " + controlValue.toString());
-  }
-  int getControlValue() {
-    return _sudoku.getControlValue();
-  }
+
 }

@@ -4,7 +4,7 @@
 part of sudokulib;
 
 class SudokuView {
-  abstractSudoku _model;
+  SudokuAdapter _model;
 
   static int _gameTableRows = 9;
   static int _gameTableCols = 9;
@@ -104,6 +104,8 @@ class SudokuView {
   // Update DOM Tree
   void update() {
     List<List<int>> gameField = _model.getGameField();
+    List<List<bool>> userinput = _model.getUserInput();
+    print("userinput hash in view:${userinput.hashCode}");
 
     // Update GameField
     for(int i = 0; i < 9; i++) {
@@ -113,6 +115,11 @@ class SudokuView {
           cell.text = "";
         else
           cell.text = gameField[i][j].toString();
+
+        //if(userinput[i][j])
+        //  cell.style.background = "red";
+
+
       }
     }
   }
@@ -137,7 +144,6 @@ class SudokuView {
     actualCell.classes.add("selectedControl");
   }
 
-  //TODO fix colors
   void initialUpdate() {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
     for(TableCellElement cell in gameCells) {
@@ -147,7 +153,7 @@ class SudokuView {
       int cellRow = int.parse(cellID.substring(0, 1));
       int cellCol = int.parse(cellID.substring(2));
       if(_model.getGameField()[cellRow][cellCol] != -1)
-      cell.classes.add("fixedGameField");
+        cell.classes.add("fixedGameField");
       String color = _model.getColors()[cellRow][cellCol].toString();
       color = color.substring(7);
       cell.classes.add(color);
@@ -290,7 +296,7 @@ class SudokuView {
     _controlField.style.height = controlTableSize.toString() + "px";
   }
 
-  void setModel(abstractSudoku sudoku) {
+  void setModel(SudokuAdapter sudoku) {
     this._model = sudoku;
   }
 }

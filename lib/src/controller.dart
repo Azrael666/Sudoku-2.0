@@ -21,12 +21,13 @@ class SudokuController {
   Timer clockTrigger;
   int _clockCount = 0;
 
-  SudokuGameGenerator _model;
-
+  SudokuAdapter _sudoku_adapter;
+  SudokuGameGenerator generator;
   SudokuView _view;
 
   SudokuController () {
-    _model = new SudokuGameGenerator();
+    generator = new SudokuGameGenerator();
+    _sudoku_adapter = generator.newStandardSudoku();
     _view = new SudokuView();
 
     addControlStuff();
@@ -96,8 +97,12 @@ class SudokuController {
     newGame(GameTypes.NONOMINO_SUDOKU);
   }
 
-  void newGame(GameTypes gameType) {
-    _view.setModel(_model.newGame(gameType));
+  void newGame(GameTypes gameType){
+
+  //das war der fehler:
+ //_view.setModel(generator.newGame(gameType));
+    _sudoku_adapter= generator.newGame(gameType);
+    _view.setModel(_sudoku_adapter);
     _view.initialUpdate();
     _view.update();
     _view.showHelp(_help);
@@ -114,7 +119,8 @@ class SudokuController {
     String cellID = cell.id.substring(5);
     int cellRow = int.parse(cellID.substring(0, 1));
     int cellCol = int.parse(cellID.substring(2));
-    _model.setGameCell(cellRow, cellCol);
+    print("setting field ($cellRow,$cellCol)");
+    _sudoku_adapter.setGameCell(cellRow, cellCol);
 
     _view.update();
     _view.showHelp(_help);
@@ -124,7 +130,7 @@ class SudokuController {
 
   void controlCell(TableCellElement cell) {
 
-    _model.setControlValue(cell.text);
+    _sudoku_adapter.setControlValue(int.parse(cell.text));
     _view.updateControl(cell);
     _view.showHelp(_help);
   }
