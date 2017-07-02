@@ -34,7 +34,7 @@ void swapRows(List<List<int>> field, int row1,int row2){
 }
 
 
-void swapColomns(List<List<int>> field, int col1,int col2){
+void swapColumns(List<List<int>> field, int col1,int col2){
   if(!testField(field))
     return;
 
@@ -61,16 +61,16 @@ swapWideRows(List<List<int>> field, int row1,int row2){
 
 }
 
-void swapWideColomns(List<List<int>> field, int col1,int col2){
+void swapWideColumns(List<List<int>> field, int col1,int col2){
   if(!testField(field))
     return;
 
   if(col1>2 || col1<0 || col2>2 || col2<0)
     return;
 
-  swapColomns(field, col1*3+0, col2*3+0);
-  swapColomns(field, col1*3+1, col2*3+1);
-  swapColomns(field, col1*3+2, col2*3+2);
+  swapColumns(field, col1*3+0, col2*3+0);
+  swapColumns(field, col1*3+1, col2*3+1);
+  swapColumns(field, col1*3+2, col2*3+2);
 
 }
 
@@ -90,10 +90,10 @@ void flipVertical(List<List<int>> field) {
     return;
 
 
-  swapColomns(field, 0, 8);
-  swapColomns(field, 1, 7);
-  swapColomns(field, 2, 6);
-  swapColomns(field, 4, 5);
+  swapColumns(field, 0, 8);
+  swapColumns(field, 1, 7);
+  swapColumns(field, 2, 6);
+  swapColumns(field, 4, 5);
 }
 
 
