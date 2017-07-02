@@ -30,7 +30,7 @@ class SudokuController {
     _view = new SudokuView();
 
     addControlStuff();
-    //print(window.navigator.userAgent);
+    print(window.navigator.userAgent);
     
   }
 
@@ -97,7 +97,16 @@ class SudokuController {
   }
 
   void newGame(GameTypes gameType) {
-    _view.setModel(_model.newGame(gameType));
+    print(gameType);
+    abstractSudoku test = _model.newGame(gameType);
+    print(test);
+    /*
+    print(test.getGameFieldSolved());
+    print(test.getGameField());
+    print(test.getUserInput());
+    */
+
+    _view.setModel(test);
     _view.initialUpdate();
     _view.update();
     _view.showHelp(_help);

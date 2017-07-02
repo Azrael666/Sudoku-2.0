@@ -142,6 +142,7 @@ class SudokuView {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
     for(TableCellElement cell in gameCells) {
       cell.classes.clear();
+      cell.classes.add("GameCell");
       cell.classes.add("COLOR_STANDARD");
       String cellID = cell.id.substring(5);
       int cellRow = int.parse(cellID.substring(0, 1));

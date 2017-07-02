@@ -18,7 +18,6 @@ class Sides{
 }
 
 
-
 class abstractSudoku {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
@@ -127,28 +126,25 @@ class SudokuGameGenerator {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
+  List<Point<int>> middlepoints;
   List<String> jsonPaths;
   List<String> jsonLevelFiles;
 
   Random _random = new Random.secure();
-
-  var _sampleSudoku = [
-    [3,4,8,7,6,2,5,1,9],
-    [9,6,5,4,1,3,2,8,7],
-    [2,1,7,5,9,8,3,6,4],
-    [5,9,3,8,4,6,7,2,1],
-    [7,2,6,3,5,1,4,9,8],
-    [4,8,1,2,7,9,6,3,5],
-    [8,3,4,9,2,7,1,5,6],
-    [6,7,2,1,8,5,9,4,3],
-    [1,5,9,6,3,4,8,7,2],
-  ];
 
   SudokuGameGenerator() {
     initialize();
   }
 
   void initialize() {
+    // initialize middlepoints
+    middlepoints = new List<Point<int>>();
+    for(int i = 1; i <= 7; i = i + 3) {
+      for(int j = 1; j <= 7; j = j + 3) {
+        middlepoints.add(new Point(i, j));
+      }
+    }
+
     jsonLevelFiles = new List<String>();
 
     String folder = "nonomino";
@@ -170,13 +166,15 @@ class SudokuGameGenerator {
   }
 
   List<List<int>> copyList(List<List<int>> copyList) {
-    List<List<int>> ret = new List<List<int>>(copyList.length);
+    List<List<int>> ret = new List<List<int>>();
+
     for(int i = 0; i < copyList.length; i++) {
-      List<int> list = new List(copyList[0].length);
-      for(int j = 0; j < copyList[0].length; j++) {
-        list[j] = copyList[i][j];
+      List<int> list = new List<int>();
+
+      for(int j = 0; j < copyList[i].length; j++) {
+        list.add(copyList[i][j]);
       }
-      ret[i] = list;
+      ret.add(list);
     }
     return ret;
   }
@@ -187,7 +185,7 @@ class SudokuGameGenerator {
 
     // TODO remove fields from gameField
     // Currently just dummy implementation
-    for(int i = 0; i < 3; i++) {
+    for(int i = 0; i < 5; i++) {
       int row = _random.nextInt(9);
       int col = _random.nextInt(9);
       userSudoku[row][col] = -1;
@@ -212,71 +210,27 @@ class SudokuGameGenerator {
   }
 
 
-
   abstractSudoku newGame(GameTypes gameType) {
     print(gameType);
-    switch (gameType) {
-      case GameTypes.X_SUDOKU:
-        return newXSudoku();
-        break;
-      case GameTypes.HYPER_SUDOKU:
-        return newHyperSudoku();
-        break;
-      case GameTypes.MIDDELPOINT_SUDOKU:
-        return newMiddlepointSudoku();
-        break;
-      case GameTypes.COLOR_SUDOKU:
-        return newColorSudoku();
-        break;
-      case GameTypes.NONOMINO_SUDOKU:
-        return newNonominoSudoku();
-        break;
-
-      case GameTypes.STANDARD_SUDOKU:
-      default:
-        return newStandardSudoku();
-        break;
+    if(gameType == GameTypes.NONOMINO_SUDOKU) {
+      return newNonominoSudoku();
+    } else {
+      return newSudoku(gameType);
     }
 
-
   }
 
-  //TODO implement Generator
-  abstractSudoku newXSudoku() {
-    // Dummy return value
-    return newStandardSudoku();
-  }
-
-  //TODO implement Generator
-  abstractSudoku newHyperSudoku() {
-    // Dummy return value
-    return newStandardSudoku();
-  }
-
-  //TODO implement Generator
-  abstractSudoku newMiddlepointSudoku() {
-    // Dummy return value
-    return newStandardSudoku();
-  }
-
-  //TODO implement Generator
-  abstractSudoku newColorSudoku() {
-    // Dummy return value
-    return newStandardSudoku();
-  }
-
-  //TODO implement Generator
   abstractSudoku newNonominoSudoku() {
-    // Dummy return value
     Map level = JSON.decode(jsonLevelFiles[1]);
 
-    abstractSudoku sudoku = new abstractSudoku();
+    _sudoku = new abstractSudoku();
 
     List<List<int>> gameFieldSolved = level["fields"];
     List<List<bool>> userInput = createUserInputValues(level["empty"], 1);
-    List<List<int>> gameField = getGameFieldFromFile(createUserSudoku(gameFieldSolved), userInput);;
+    List<List<int>> gameField = getGameFieldFromFile(gameFieldSolved, userInput);;
 
     // Create Regions List;
+    // TODO Regions necessary?
     // TODO add color regions
     List<List<Point<int>>> totalList = new List<List<Point<int>>>();
     List<List<Point<int>>> rowList = getRowRegions();
@@ -363,18 +317,19 @@ class SudokuGameGenerator {
 
 
     }
-    sudoku.setSides(sides);
+    _sudoku.setSides(sides);
 
 
 
 
-    sudoku.setGameFieldSolved(gameFieldSolved);
-    sudoku.setGameField(gameField);
-    sudoku.setUserInput(userInput);
-    sudoku.setRegions(totalList);
-    sudoku.setColors(colors);
+    _sudoku.setGameFieldSolved(gameFieldSolved);
+    _sudoku.setGameField(gameField);
+    _sudoku.setUserInput(userInput);
+    _sudoku.setRegions(totalList);
+    _sudoku.setColors(colors);
 
 
+    /*
 
     print("Difficulty: " + level["difficulty"]);
     print("GamefieldSolved:");
@@ -382,14 +337,255 @@ class SudokuGameGenerator {
     print("Gamefield:");
     printSudoku(gameField);
     print("UserInput: " + userInput.toString());
+    */
 
-    return sudoku;
+    return _sudoku;
   }
 
-  abstractSudoku newStandardSudoku() {
+  List<List<int>> generateGame(GameTypes gameType) {
+    List<List<int>> sudoku = new List<List<int>>();
+
+    // initialize every value of the sudoku field with -1
+    for(int i = 0; i < 9; i++) {
+      List<int> row = new List<int>();
+      for(int j = 0; j < 9; j++) {
+        row.add(-1);
+      }
+      sudoku.add(row);
+    }
+
+    // Initialize every set with numbers 1-9
+    List<List<List<int>>> sets = new List<List<List<int>>>();
+
+    // Rows
+    for(int i = 0; i < 9; i++) {
+      List<List<int>> row = new List<List<int>>();
+
+      // Cols
+      for(int j = 0; j < 9; j++) {
+        List<int> set = new List<int>();
+
+        // Numbers 1-9
+        for(int k = 1; k < 10; k++) {
+          set.add(k);
+        }
+        row.add(set);
+      }
+      sets.add(row);
+    }
+
+    // Generate sudoku
+
+    if(createGame(sudoku, sets, gameType)) {
+      printSudoku(sudoku);
+      print("Found Sudoku");
+      return sudoku;
+    } else {
+      print("Found no Sudoku");
+      return null;
+    }
+  }
+
+  bool createGame(List<List<int>> sudoku, List<List<List<int>>> sets, GameTypes gameType) {
+
+    // find next empty position
+    Point<int> nextPosition = findNextPosition(sudoku);
+
+    // return true if the sudoku board is complety filled
+    if(nextPosition != null) {
+      int positionX = nextPosition.x;
+      int positionY = nextPosition.y;
+
+      // get set with possible numbers for current position
+      List<int> positionNumberSet = new List<int>.from(sets[positionX][positionY]);
+
+      int positionNumberSetSize = positionNumberSet.length;
+
+      // continue, if there is a possible number for the current position
+      if(positionNumberSetSize > 0) {
+
+        // create new numbers 0 - positionNumberSetSize
+        List<int> rand = new List<int>();
+        for(int i = 0; i < positionNumberSetSize; i++) {
+          rand.add(i);
+        }
+        // shuffle numbers for random order
+        rand.shuffle();
+
+        // check every possible number for this position
+        for(int i = 0; i < positionNumberSetSize; i++) {
+          // get random possible number from set
+          int index = rand.removeAt(0);
+          int nextNumber = positionNumberSet[index];
+
+          // fill number in current position field of sudoku
+          sudoku[positionX][positionY] = nextNumber;
+          //printSudoku(sudoku);
+
+          // remove chosen number from all sets of position's row, column & 3x3 area
+
+          List<List<List<int>>> nextSets = removeNumberFromSets(positionX, positionY, nextNumber, sets, gameType);
+
+          // recursive call for finding next number
+          if(createGame(sudoku, nextSets, gameType)) {
+            return true;
+          } else {
+            sudoku[positionX][positionY] = -1;
+            continue;
+          }
+        }
+        return false;
+
+      } else
+        return false;
+
+    } else {
+      print("Sudoku finished");
+      return true;
+    }
+  }
+
+  Point<int> findNextPosition(List<List<int>> sudoku) {
+
+    // top left to bottom right
+    for(int i = 0; i < 9; i++) {
+      for(int j = 0; j < 9; j++) {
+        if(sudoku[i][j] == -1)
+          return new Point(i, j);
+      }
+    }
+
+    return null;
+  }
+
+  List<List<List<int>>> removeNumberFromSets(int x, int y, int number, List<List<List<int>>> sets, GameTypes gameType) {
+
+    // Complete copy of given sets
+
+    List<List<List<int>>> nextSets = new List<List<List<int>>>();
+
+    // for each row
+    for(int i = 0; i < sets.length; i++) {
+      List<List<int>> nextRow = new List<List<int>>();
+
+      // for each col in row
+      for(int j = 0; j < sets[i].length; j++) {
+        List<int> nextCol = new List<int>();
+
+        List<int> set = sets[i][j];
+
+        for(int k = 0; k < set.length; k++) {
+          int temp = set[k];
+          nextCol.add(temp);
+        }
+
+        nextRow.add(nextCol);
+      }
+
+      nextSets.add(nextRow);
+    }
+
+
+    // Removal
+
+    // Rows & Cols
+    removeNumberFromRowsAndCols(x, y, number, nextSets);
+
+    // 3x3 area
+    if(gameType != GameTypes.NONOMINO_SUDOKU)
+      removeNumberFrom3x3Area(x, y, number, nextSets);
+
+    // diagonals
+    if(gameType == GameTypes.X_SUDOKU)
+      removeNumberFromDiagonals(x, y, number, nextSets);
+
+    // Hyper
+    if(gameType == GameTypes.HYPER_SUDOKU)
+      removeNumberFromHyperSquares(x, y, number, nextSets);
+
+    // Middlepoint
+    if(gameType == GameTypes.MIDDELPOINT_SUDOKU)
+      removeNumberFromCenterSquares(x, y, number, nextSets);
+
+    // Color
+    if(gameType == GameTypes.COLOR_SUDOKU)
+      removeNumberFromColors(x, y, number, nextSets);
+
+    return nextSets;
+  }
+
+  void removeNumberFromRowsAndCols(int x, int y, int number, List<List<List<int>>> sets) {
+    for(int i = 0; i < 9; i++) {
+      int rowIndex = sets[i][y].indexOf(number);
+      if(rowIndex >= 0)
+        sets[i][y].removeAt(rowIndex);
+
+      int colIndex = sets[x][i].indexOf(number);
+      if(colIndex >= 0)
+        sets[x][i].removeAt(colIndex);
+    }
+  }
+
+  void removeNumberFrom3x3Area(int x, int y, int number, List<List<List<int>>> sets) {
+    int bx = x - x % 3;
+    int by = y - y % 3;
+    for(int i = bx; i < bx + 3; i++) {
+      for(int j = by; j < by + 3; j++) {
+        int cellIndex = sets[i][j].indexOf(number);
+        if(cellIndex >= 0)
+          sets[i][j].removeAt(cellIndex);
+      }
+    }
+  }
+
+  void removeNumberFromDiagonals(int x, int y, int number, List<List<List<int>>> sets) {
+    // if number is in diagonal from top left to bottom right
+    if(x == y) {
+      for(int i = 0; i < 9; i++) {
+        int cellIndex = sets[i][i].indexOf(number);
+        if (cellIndex >= 0) {
+          sets[i][i].removeAt(cellIndex);
+        }
+      }
+    }
+    // if number is in diagonal from bottom left to top right
+    if(x == 8 - y) {
+      for (int i = 0; i < 9; i++) {
+        int cellIndex = sets[i][8 - i].indexOf(number);
+        if (cellIndex >= 0)
+          sets[i][8 - i].removeAt(cellIndex);
+      }
+    }
+  }
+
+  // TODO implement
+  void removeNumberFromHyperSquares(int x, int y, int number, List<List<List<int>>> sets) {
+
+  }
+
+  void removeNumberFromCenterSquares(int x, int y, int number, List<List<List<int>>> sets) {
+
+    Point<int> positionPoint = new Point(x, y);
+    if(middlepoints.contains(positionPoint)) {
+      for(Point<int> point in middlepoints) {
+        int cellIndex = sets[point.x][point.y].indexOf(number);
+        if(cellIndex >= 0)
+          sets[point.x][point.y] .removeAt(cellIndex);
+      }
+
+    }
+  }
+
+  // TODO implement
+  void removeNumberFromColors(int x, int y, int number, List<List<List<int>>> sets) {
+
+  }
+
+
+  abstractSudoku newSudoku(GameTypes gameType) {
 
     // Create new solved sudoku
-    _gameFieldSolved = createSudoku();
+    _gameFieldSolved = generateGame(gameType);
 
     // Delete fields
     _gameField = createUserSudoku(_gameFieldSolved);
@@ -402,6 +598,9 @@ class SudokuGameGenerator {
     _sudoku.setGameField(_gameField);
     _sudoku.setUserInput(_userInput);
 
+
+    // TODO Regions necessary?
+    /*
     // Create Regions List;
     List<List<Point<int>>> totalList = new List<List<Point<int>>>();
     List<List<Point<int>>> rowList = getRowRegions();
@@ -422,8 +621,9 @@ class SudokuGameGenerator {
 
     _sudoku.setRegions(totalList);
 
-    print("TEST - Sudoku valid?: " + isValid(totalList, _gameFieldSolved).toString());
+  */
 
+    //TODO make variable, add other color schemes
     // Create Colors
     List<List<Colors>> colors = new List<List<Colors>>(_gameFieldSolved.length);
     for(int i = 0; i < _gameFieldSolved.length; i++) {
@@ -498,6 +698,7 @@ class SudokuGameGenerator {
 
     return _sudoku;
   }
+
 
   List<List<int>> getGameFieldFromFile(List<List<int>> sudokuSolved, List<List<bool>> userInputValues) {
     List<List<int>> gameField = copyList(sudokuSolved);
@@ -593,113 +794,6 @@ class SudokuGameGenerator {
     print("");
   }
 
-  List<List<int>> transmorphSudoku(List<List<int>> sudoku){
-    List<List<int>> tempSudoku = copyList(sudoku);
-
-    // swap set of rows
-    for(int i = 0; i < 3; i++) {
-      swapSetOfRows(tempSudoku);
-    }
-    // swap set of cols
-    for(int i = 0; i < 3; i++) {
-      tempSudoku = swapSetOfCols(tempSudoku);
-    }
-
-    // swap 2 rows in set of rows
-    // TODO
-
-    // swap 2 cols in set of cols
-    // TODO
-
-    // swap two numbers in total
-    for(int i = 0; i < 20; i++)
-      swap2Numbers(tempSudoku);
-
-    return tempSudoku;
-  }
-
-  void swapSetOfRows(List<List<int>> sudoku) {
-    List<List<int>> set1 = new List<List<int>>();
-    List<List<int>> set2 = new List<List<int>>();
-    int swapSet1 = _random.nextInt(3);
-    int swapSet2;
-    do {
-      swapSet2 = _random.nextInt(3);
-    } while(swapSet2 == swapSet1);
-
-    //print("SwapSet1: " + swapSet1.toString() + " - " + swapSet2.toString());
-
-    swapSet1 *= 3;
-    swapSet2 *= 3;
-
-    set1.add(sudoku[swapSet1]);
-    set1.add(sudoku[swapSet1 + 1]);
-    set1.add(sudoku[swapSet1 + 2]);
-
-    set2.add(sudoku[swapSet2]);
-    set2.add(sudoku[swapSet2 + 1]);
-    set2.add(sudoku[swapSet2 + 2]);
-
-    sudoku[swapSet1] = set2[0];
-    sudoku[swapSet1 + 1] = set2[1];
-    sudoku[swapSet1 + 2] = set2[2];
-
-    sudoku[swapSet2] = set1[0];
-    sudoku[swapSet2 + 1] = set1[1];
-    sudoku[swapSet2 + 2] = set1[2];
-
-  }
-
-  List<List<int>> swapSetOfCols(List<List<int>> sudoku) {
-    var transposedSudoku = transposeMatrix(sudoku);
-    swapSetOfRows(transposedSudoku);
-    return transposeMatrix(transposedSudoku);
-  }
-
-
-  void swap2Numbers(List<List<int>> sudoku) {
-    int swap1 = _random.nextInt(9)+1;
-    int swap2;
-    do {
-      swap2 = _random.nextInt(9)+1;
-    } while(swap2 == swap1);
-
-    //print("swap1: " + swap1.toString() + " - swap2: " + swap2.toString());
-
-    for(int i = 0; i < sudoku.length; i++) {
-      for (int j = 0; j < sudoku[0].length; j++) {
-        if (sudoku[i][j] == swap2)
-          sudoku[i][j] = swap1;
-        else if (sudoku[i][j] == swap1)
-          sudoku[i][j] = swap2;
-      }
-    }
-  }
-
-  List<List<int>> createSudoku() {
-
-    return transmorphSudoku(_sampleSudoku);
-
-    //print("UserInput:");
-    //print(userInput);
-  }
-
-  // returns transposed matrix
-  List<List<int>> transposeMatrix(List<List<int>> matrix) {
-    // Initialize List
-    List<List<int>> transposedMatrix = new List<List<int>>(matrix.length);
-    for(int i = 0; i < transposedMatrix.length; i++) {
-      transposedMatrix[i] = new List<int>(matrix[i].length);
-    }
-
-    // swap elements
-    for(int i = 0; i < matrix.length; i++) {
-      for(int j = 0; j < matrix[i].length; j++) {
-        transposedMatrix[j][i] = matrix[i][j];
-      }
-    }
-    return transposedMatrix;
-  }
 
 
   // TODO implementation
