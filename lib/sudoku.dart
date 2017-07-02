@@ -10,6 +10,9 @@ import 'dart:math';
 
 
 part 'src/permutation_utils.dart';
+part 'src/seeds.dart';
+part 'src/validation_utils.dart';
+
 part 'src/model.dart';
 part 'src/view.dart';
 part 'src/controller.dart';
