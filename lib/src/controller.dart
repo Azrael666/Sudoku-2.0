@@ -112,6 +112,8 @@ class SudokuController {
     _view.update();
     _view.showHelp(_help);
     _view.setControl();
+    _clockCount = 0;
+    _view.updateClock(_clockCount);
   }
 
   void helpFunc(e) {

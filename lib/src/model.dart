@@ -146,18 +146,77 @@ class SudokuGameGenerator {
 
     // initialize diagonal positions
     diagonalPoints = new List<List<Point<int>>>();
-    // if number is in diagonal from top left to bottom right
     List<Point<int>> firstDiagonal = new List<Point<int>>();
     List<Point<int>> secondDiagonal = new List<Point<int>>();
     for(int i = 0; i < 9; i++) {
+      // first diagonal from top left to bottom right
       Point<int> firstPoint = new Point(i, i);
       firstDiagonal.add(firstPoint);
 
+      // second diagonal from bottom left to top right
       Point<int> secondPoint = new Point(i, 8 - i);
       secondDiagonal.add(secondPoint);
     }
     diagonalPoints.add(firstDiagonal);
     diagonalPoints.add(secondDiagonal);
+
+    // initialize hyper positions
+    hyperPoints = new List<List<Point<int>>>();
+
+    List<Point<int>> hyperSquare1 = new List<Point<int>>();
+    List<Point<int>> hyperSquare2 = new List<Point<int>>();
+    List<Point<int>> hyperSquare3 = new List<Point<int>>();
+    List<Point<int>> hyperSquare4 = new List<Point<int>>();
+
+    for(int i = 1; i <= 3; i++) {
+      for(int j = 1; j <= 3; j++) {
+        hyperSquare1.add(new Point(i, j));
+        hyperSquare2.add(new Point(i + 4, j));
+        hyperSquare3.add(new Point(i, j + 4));
+        hyperSquare4.add(new Point(i + 4, j + 4));
+      }
+    }
+    hyperPoints.add(hyperSquare1);
+    hyperPoints.add(hyperSquare2);
+    hyperPoints.add(hyperSquare3);
+    hyperPoints.add(hyperSquare4);
+
+    // initialize color positions
+    colorPoints = new List<List<Point<int>>>();
+    List<Point<int>> Color1 = new List<Point<int>>();
+    List<Point<int>> Color2 = new List<Point<int>>();
+    List<Point<int>> Color3 = new List<Point<int>>();
+    List<Point<int>> Color4 = new List<Point<int>>();
+    List<Point<int>> Color5 = new List<Point<int>>();
+    List<Point<int>> Color6 = new List<Point<int>>();
+    List<Point<int>> Color7 = new List<Point<int>>();
+    List<Point<int>> Color8 = new List<Point<int>>();
+    List<Point<int>> Color9 = new List<Point<int>>();
+
+    for(int i = 0; i <= 6; i = i + 3) {
+      for(int j = 0; j <= 6; j = j + 3) {
+        Color1.add(new Point(i, j));
+        Color2.add(new Point(i, j + 1));
+        Color3.add(new Point(i, j + 2));
+        Color4.add(new Point(i + 1, j));
+        Color5.add(new Point(i + 1, j + 1));
+        Color6.add(new Point(i + 1, j + 2));
+        Color7.add(new Point(i + 2, j));
+        Color8.add(new Point(i + 2, j + 1));
+        Color9.add(new Point(i + 2, j + 2));
+      }
+    }
+    colorPoints.add(Color1);
+    colorPoints.add(Color2);
+    colorPoints.add(Color3);
+    colorPoints.add(Color4);
+    colorPoints.add(Color5);
+    colorPoints.add(Color6);
+    colorPoints.add(Color7);
+    colorPoints.add(Color8);
+    colorPoints.add(Color9);
+
+
 
     // Load jsonFiles for nonomino sudokus
     jsonLevelFiles = new List<String>();
@@ -388,11 +447,28 @@ class SudokuGameGenerator {
       sets.add(row);
     }
 
-    // Generate sudoku
+    //final cancelTimerSpeed = const Duration(milliseconds: 5000);
+    //Timer test = new Timer(cancelTimerSpeed, callback);
 
-    if(createGame(sudoku, sets, gameType)) {
+    Stopwatch timeStopwath = new Stopwatch();
+    timeStopwath.start();
+    // Generate sudoku
+    //counter = 0;
+
+    bool found = false;
+    int count = 1;
+    do {
+      print("Count: " + count.toString());
+      Stopwatch cancelTimer = new Stopwatch();
+      cancelTimer.start();
+      found = createGame(sudoku, sets, gameType, cancelTimer);
+      count++;
+    } while(!found && timeStopwath.elapsedMilliseconds < 10000);
+
+    if(found) {
       printSudoku(sudoku);
       print("Found Sudoku");
+      print("Needed time: " + timeStopwath.elapsedMilliseconds.toString());
       return sudoku;
     } else {
       print("Found no Sudoku");
@@ -400,8 +476,9 @@ class SudokuGameGenerator {
     }
   }
 
-  bool createGame(List<List<int>> sudoku, List<List<List<int>>> sets, GameTypes gameType) {
-
+  bool createGame(List<List<int>> sudoku, List<List<List<int>>> sets, GameTypes gameType, Stopwatch cancelTimer) {
+    if(cancelTimer.elapsedMilliseconds > 1000)
+      return false;
     // find next empty position
     Point<int> nextPosition = findNextPosition(sudoku);
 
@@ -441,7 +518,7 @@ class SudokuGameGenerator {
           List<List<List<int>>> nextSets = removeNumberFromSets(positionX, positionY, nextNumber, sets, gameType);
 
           // recursive call for finding next number
-          if(createGame(sudoku, nextSets, gameType)) {
+          if(createGame(sudoku, nextSets, gameType, cancelTimer)) {
             return true;
           } else {
             sudoku[positionX][positionY] = -1;
@@ -461,6 +538,25 @@ class SudokuGameGenerator {
 
   Point<int> findNextPosition(List<List<int>> sudoku) {
 
+    /*
+    // random
+    List<Point<int>> emptyCells = new List<Point<int>>();
+    for(int i = 0; i < sudoku.length; i++) {
+      for(int j = 0; j < sudoku[0].length; j++) {
+        if(sudoku[i][j] == -1)
+          emptyCells.add(new Point(i, j));
+      }
+    }
+
+    if(emptyCells.length == 0)
+      return null;
+    else {
+      int index =_random.nextInt(emptyCells.length);
+      return emptyCells[index];
+    }
+
+    */
+
     // top left to bottom right
     for(int i = 0; i < 9; i++) {
       for(int j = 0; j < 9; j++) {
@@ -470,6 +566,7 @@ class SudokuGameGenerator {
     }
 
     return null;
+
   }
 
   List<List<List<int>>> removeNumberFromSets(int x, int y, int number, List<List<List<int>>> sets, GameTypes gameType) {
@@ -565,52 +662,20 @@ class SudokuGameGenerator {
       }
     }
 
-    /*
+  }
 
-    // if number is in diagonal from top left to bottom right
-    if(x == y) {
-      for(int i = 0; i < 9; i++) {
-        int cellIndex = sets[i][i].indexOf(number);
-        if (cellIndex >= 0) {
-          sets[i][i].removeAt(cellIndex);
+  void removeNumberFromHyperSquares(int x, int y, int number, List<List<List<int>>> sets) {
+
+    Point<int> positionPoint = new Point(x, y);
+    for(List<Point<int>> hyper in hyperPoints) {
+      if(hyper.contains(positionPoint)) {
+        for(Point<int> point in hyper) {
+          int cellIndex = sets[point.x][point.y].indexOf(number);
+          if(cellIndex >= 0)
+            sets[point.x][point.y] .removeAt(cellIndex);
         }
       }
     }
-    // if number is in diagonal from bottom left to top right
-    if(x == 8 - y) {
-      for (int i = 0; i < 9; i++) {
-        int cellIndex = sets[i][8 - i].indexOf(number);
-        if (cellIndex >= 0)
-          sets[i][8 - i].removeAt(cellIndex);
-      }
-    }
-
-    */
-  }
-
-  // TODO implement
-  void removeNumberFromHyperSquares(int x, int y, int number, List<List<List<int>>> sets) {
-
-    bool top = false;
-    bool bottom = false;
-    bool left = false;
-    bool right = false;
-
-    if(x >= 1 && x <= 3)
-      top = true;
-    else if(x >= 5 && x <= 7)
-      bottom = true;
-
-    if(y >= 1 && y <= 3)
-      left = true;
-    else if(y >= 5 && y <= 7)
-      right = true;
-
-    if((top || bottom) && (left || right)) {
-
-    }
-    else
-      return;
 
 
   }
@@ -628,8 +693,18 @@ class SudokuGameGenerator {
     }
   }
 
-  // TODO implement
   void removeNumberFromColors(int x, int y, int number, List<List<List<int>>> sets) {
+
+    Point<int> positionPoint = new Point(x, y);
+    for(List<Point<int>> color in colorPoints) {
+      if(color.contains(positionPoint)) {
+        for(Point<int> point in color) {
+          int cellIndex = sets[point.x][point.y].indexOf(number);
+          if(cellIndex >= 0)
+            sets[point.x][point.y] .removeAt(cellIndex);
+        }
+      }
+    }
 
   }
 
