@@ -5,9 +5,8 @@ part of sudokulib;
 
 enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_HIGHLIGHTED, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
 enum GameTypes {STANDARD_SUDOKU, X_SUDOKU, HYPER_SUDOKU, MIDDELPOINT_SUDOKU, COLOR_SUDOKU, NONOMINO_SUDOKU}
-
-
 enum BorderType {THICK,THIN}
+
 
 class Sides{
   BorderType left,bottom,right,top;
@@ -257,7 +256,7 @@ class SudokuGameGenerator {
 
     // TODO remove fields from gameField
     // Currently just dummy implementation
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 20; i++) {
       int row = _random.nextInt(9);
       int col = _random.nextInt(9);
       userSudoku[row][col] = -1;
@@ -301,7 +300,8 @@ class SudokuGameGenerator {
   }
 
   abstractSudoku newNonominoSudoku() {
-    Map level = JSON.decode(jsonLevelFiles[1]);
+    int random = _random.nextInt(3);
+    Map level = JSON.decode(jsonLevelFiles[random]);
 
     abstractSudoku sudoku = new abstractSudoku();
 
@@ -754,44 +754,12 @@ class SudokuGameGenerator {
   */
 
 
-    //TODO make variable, add other color schemes
     // Create Colors
     List<List<Colors>> colors = new List<List<Colors>>(gameFieldSolved.length);
 
     for(int i = 0; i < gameFieldSolved.length; i++) {
       List<Colors> colorRow  = new List<Colors>(gameFieldSolved[0].length);
       for(int j = 0; j < gameFieldSolved[0].length; j++) {
-
-        // Test Colors
-        switch(j) {
-          case 0:
-            colorRow[j] = Colors.COLOR_1;
-            break;
-          case 1:
-            colorRow[j] = Colors.COLOR_2;
-            break;
-          case 2:
-            colorRow[j] = Colors.COLOR_3;
-            break;
-          case 3:
-            colorRow[j] = Colors.COLOR_4;
-            break;
-          case 4:
-            colorRow[j] = Colors.COLOR_5;
-            break;
-          case 5:
-            colorRow[j] = Colors.COLOR_6;
-            break;
-          case 6:
-            colorRow[j] = Colors.COLOR_7;
-            break;
-          case 7:
-            colorRow[j] = Colors.COLOR_8;
-            break;
-          case 8:
-            colorRow[j] = Colors.COLOR_9;
-            break;
-        }
 
         // Standard Colors
         if((i >= 3 && i <= 5 && (j < 3 || j > 5)) || (j >= 3 && j <= 5 && (i < 3 || i > 5)))
@@ -890,6 +858,10 @@ class SudokuGameGenerator {
     return gameField;
   }
 
+
+  // Region stuff - maybe unnecessary
+  /*
+
   // Creates list of row coordinates (Point<int>)
   List<List<Point<int>>> getRowRegions() {
     List<List<Point<int>>> list = new List<List<Point<int>>>();
@@ -944,6 +916,8 @@ class SudokuGameGenerator {
     }
     return area;
   }
+
+  */
 
 
   void printSudoku(List<List<int>> sudoku) {

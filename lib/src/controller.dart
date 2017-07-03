@@ -6,7 +6,7 @@ part of sudokulib;
 
 
 class SudokuController {
-  
+
   final _overlay = document.getElementById("overlay");
   final _standardSudokuButton = document.getElementById("standardSudokuButton");
   final _xSudokuButton = document.getElementById("xSudokuButton");
@@ -32,7 +32,7 @@ class SudokuController {
 
     addControlStuff();
     print(window.navigator.userAgent);
-    
+
   }
 
   addControlStuff() {
@@ -118,27 +118,31 @@ class SudokuController {
   }
 
   void helpFunc(e) {
-    _help = !_help;
-    _view.showHelp(_help);
-
+    if(_sudoku != null) {
+      _help = !_help;
+      _view.showHelp(_help);
+    }
   }
 
   void gameCell(TableCellElement cell) {
-    String cellID = cell.id.substring(5);
-    int cellRow = int.parse(cellID.substring(0, 1));
-    int cellCol = int.parse(cellID.substring(2));
-    _sudoku.setGameCell(cellRow, cellCol);
+    if(_sudoku != null) {
+      String cellID = cell.id.substring(5);
+      int cellRow = int.parse(cellID.substring(0, 1));
+      int cellCol = int.parse(cellID.substring(2));
+      _sudoku.setGameCell(cellRow, cellCol);
 
-    _view.update();
-    _view.showHelp(_help);
+      _view.update();
+      _view.showHelp(_help);
 
-    _view.updateWin();
+      _view.updateWin();
+    }
   }
 
   void controlCell(TableCellElement cell) {
-
-    _sudoku.setControlValue(cell.text);
-    _view.updateControl(cell);
-    _view.showHelp(_help);
+    if(_sudoku != null) {
+      _sudoku.setControlValue(cell.text);
+      _view.updateControl(cell);
+      _view.showHelp(_help);
+    }
   }
 }

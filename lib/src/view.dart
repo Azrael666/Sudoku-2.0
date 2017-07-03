@@ -218,18 +218,32 @@ class SudokuView {
 
 
   void updateClock(Duration clockCount) {
-    int hours = clockCount.inHours;
-    int minutes = clockCount.inMinutes;
-    int seconds = clockCount.inSeconds;
+    int hours = clockCount.inHours % 24;
+    int minutes = clockCount.inMinutes % 60;
+    int seconds = clockCount.inSeconds % 60;
     _clock.text = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString();
   }
 
   // TODO set overlay, not title text
   void updateWin() {
-    if(_model.isSolved())
+    if(_model.isSolved()) {
       _title.text = "WIN";
-    else
+
+      /*
+      _overlay.innerHtml =
+      "test";
+
+      _container.style.display = "none";
+      */
+    }
+    else {
       _title.text = ">sudo ku";
+
+      /*
+      _warningOverlay.innerHtml = "";
+      _container.style.display = "block";
+      */
+    }
   }
 
   void showHelp(bool help) {
