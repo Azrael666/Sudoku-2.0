@@ -3,7 +3,7 @@
 
 part of sudokulib;
 
-enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
+enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_STANDARD_GREEN, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
 enum GameTypes {STANDARD_SUDOKU, X_SUDOKU, HYPER_SUDOKU, MIDDELPOINT_SUDOKU, COLOR_SUDOKU, NONOMINO_SUDOKU}
 
 
@@ -285,11 +285,18 @@ class SudokuGameGenerator {
 
   abstractSudoku newGame(GameTypes gameType) {
     print(gameType);
+
+    return (gameType == GameTypes.NONOMINO_SUDOKU?
+      newNonominoSudoku():
+      newSudoku(gameType));
+
+    /*
     if(gameType == GameTypes.NONOMINO_SUDOKU) {
       return newNonominoSudoku();
     } else {
       return newSudoku(gameType);
     }
+    */
 
   }
 
@@ -717,7 +724,7 @@ class SudokuGameGenerator {
     List<List<int>> gameFieldSolved = generateGame(gameType);
 
     // Delete fields
-   List<List<int>> gameField = createUserSudoku(gameFieldSolved);
+    List<List<int>> gameField = createUserSudoku(gameFieldSolved);
 
     // Set empty fields as userInput
     List<List<bool>>userInput = createUserInputValues(gameField, -1);
@@ -750,6 +757,7 @@ class SudokuGameGenerator {
     _sudoku.setRegions(totalList);
 
   */
+
 
     //TODO make variable, add other color schemes
     // Create Colors
@@ -798,6 +806,39 @@ class SudokuGameGenerator {
       }
       colors[i] = colorRow;
     }
+
+    if(gameType == GameTypes.X_SUDOKU){
+      for(int i=0;i<9;i++){
+        colors[8-i][i]  = colors[i][i] = Colors.COLOR_STANDARD_GREEN;
+
+      }
+    }
+
+    if(gameType == GameTypes.MIDDELPOINT_SUDOKU){
+      for(int i=0;i<3;i++){
+        for(int i1=0;i1<3;i1++){
+          colors[i*3+1][i1*3+1] = Colors.COLOR_STANDARD_GREEN;
+        }
+      }
+    }
+
+
+    if(gameType  == GameTypes.HYPER_SUDOKU){
+      for(int i=0;i<2;i++){
+        for(int i1=0;i1<2;i1++){
+
+          for(int i2=0;i2<3;i2++){
+            for(int i3=0;i3<3;i3++){
+              colors[i*4+1+i2][i1*4+1+i3] = Colors.COLOR_STANDARD_GREEN;
+
+            }
+          }
+        }
+
+      }
+    }
+
+
 
 
     List<List<Sides>> sides = new List();
@@ -893,27 +934,7 @@ class SudokuGameGenerator {
     return area;
   }
 
-  bool isValid(List<List<Point<int>>> regions, List<List<int>> sudoku) {
-    for(List<Point<int>> list in regions) {
-        if(!checkRegion(list, sudoku)) {
-          return false;
-        }
-    }
-    return true;
-  }
 
-  bool checkRegion(List<Point<int>> region, List<List<int>> sudoku) {
-
-      List<int> values = new List<int>();
-      for(Point<int> point in region) {
-        values.add(sudoku[point.x][point.y]);
-      }
-      for(int i = 1; i < 10; i++) {
-        if(!values.contains(i))
-          return false;
-      }
-      return true;
-  }
 
   void printSudoku(List<List<int>> sudoku) {
     for(List<int> i in sudoku) {

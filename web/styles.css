@@ -84,6 +84,10 @@ html, body {
     background-color: lightgray;
 }
 
+.COLOR_STANDARD_GREEN {
+    background-color: #a0ff59;
+}
+
 .COLOR_1 {
     background-color: indianred;
 }
