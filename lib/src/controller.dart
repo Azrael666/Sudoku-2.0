@@ -19,7 +19,7 @@ class SudokuController {
 
   final clockTriggerSpeed = const Duration(milliseconds: 1000);
   Timer clockTrigger;
-  int _clockCount = 0;
+  Stopwatch stopwatch;
 
   SudokuGameGenerator _model;
   abstractSudoku _sudoku;
@@ -39,6 +39,8 @@ class SudokuController {
     print("Add Control Stuff");
 
     clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
+    stopwatch = new Stopwatch();
+    stopwatch.start();
 
     _standardSudokuButton.addEventListener('click', newStandardSudoku);
     _xSudokuButton.addEventListener('click', newXSudoku);
@@ -65,8 +67,7 @@ class SudokuController {
   }
 
   void clock() {
-    _clockCount++;
-    _view.updateClock(_clockCount);
+    _view.updateClock(stopwatch.elapsed);
   }
 
   void windowResize(e) {
@@ -112,8 +113,8 @@ class SudokuController {
     _view.update();
     _view.showHelp(_help);
     _view.setControl();
-    _clockCount = 0;
-    _view.updateClock(_clockCount);
+    stopwatch.reset();
+    _view.updateClock(stopwatch.elapsed);
   }
 
   void helpFunc(e) {

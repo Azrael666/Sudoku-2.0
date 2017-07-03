@@ -217,9 +217,11 @@ class SudokuView {
   }
 
 
-  //TODO improve clock to hh:mm:ss
-  void updateClock(int clockCount) {
-    _clock.text = clockCount.toString();
+  void updateClock(Duration clockCount) {
+    int hours = clockCount.inHours;
+    int minutes = clockCount.inMinutes;
+    int seconds = clockCount.inSeconds;
+    _clock.text = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString();
   }
 
   // TODO set overlay, not title text
