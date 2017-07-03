@@ -834,6 +834,24 @@ class SudokuGameGenerator {
       }
     }
 
+    if(gameType == GameTypes.COLOR_SUDOKU){
+      List<Colors> list = [Colors.COLOR_1,Colors.COLOR_2,Colors.COLOR_3,Colors.COLOR_4,Colors.COLOR_5,Colors.COLOR_6,Colors.COLOR_7,Colors.COLOR_8,Colors.COLOR_9];
+      list.shuffle();
+
+      for(int i=0;i<3;i++){
+        for(int i1=0;i1<3;i1++){
+
+          for(int i2=0;i2<3;i2++){
+            for(int i3=0;i3<3;i3++){
+              colors[i*3+i2][i1*3+i3] = list[i2*3+i3];
+            }
+          }
+
+
+        }
+      }
+    }
+
     List<List<Sides>> sides = new List();
     for (int i = 0; i < 9; i++) {
       List<Sides> lis = new List();
