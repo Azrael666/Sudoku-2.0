@@ -4,6 +4,9 @@
 part of sudokulib;
 
 
+int threads =0;
+bool gaurd = false;
+
 
 class SudokuController {
   
@@ -97,7 +100,20 @@ class SudokuController {
     newGame(GameTypes.NONOMINO_SUDOKU);
   }
 
-  void newGame(GameTypes gameType) {
+
+
+  Future<int> newGame(GameTypes gameType) async{
+    print("<-UPDATE>");
+    threads +=1;
+    if(gaurd){
+      print("already making new sudoku, please wait.");
+      return -1;
+    }
+    else{
+      print("gaurd hashcode:${gaurd.hashCode}, threads:$threads");
+    }
+    gaurd = true;
+
     print(gameType);
     _sudoku = _model.newGame(gameType);
     print(_sudoku);
@@ -114,6 +130,11 @@ class SudokuController {
     _view.setControl();
     _clockCount = 0;
     _view.updateClock(_clockCount);
+
+    threads-=1;
+    gaurd = false;
+    print("<-UPDATE/>");
+    return 0;
   }
 
   void helpFunc(e) {
