@@ -24,7 +24,6 @@ class abstractSudoku {
   List<List<bool>> _userInput;
   List<List<Point<int>>> _regions;
   List<List<Colors>> _colors;
-
   List<List<Sides>> _sides;
 
   int _controlValue;
@@ -76,8 +75,10 @@ class abstractSudoku {
     return this._controlValue;
   }
 
-  setControlValue(int value) {
-    this._controlValue = value;
+  void setControlValue(String value) {
+    int controlValue = int.parse(value);
+    this._controlValue = controlValue;
+    print("Control Value: " + controlValue.toString());
   }
 
   List<List<Point<int>>> getRegions() {
@@ -92,6 +93,10 @@ class abstractSudoku {
     return this._colors;
   }
 
+  setColors(List<List<Colors>> colors) {
+    this._colors = colors;
+  }
+
   List<List<Sides>> getSides() {
     return this._sides;
   }
@@ -99,9 +104,6 @@ class abstractSudoku {
     this._sides= sides;
   }
 
-  setColors(List<List<Colors>> colors) {
-    this._colors = colors;
-  }
 
   void setGameCell(int row, int col) {
     print("Set GameCell " + row.toString() + " - " + col.toString());
@@ -121,23 +123,20 @@ class abstractSudoku {
 
 class SudokuGameGenerator {
 
-  abstractSudoku _sudoku;
-
-  List<List<int>> _gameFieldSolved;
-  List<List<int>> _gameField;
-  List<List<bool>> _userInput;
-  List<Point<int>> middlepoints;
+  // Json paths & levelFiles
   List<String> jsonPaths;
   List<String> jsonLevelFiles;
 
   Random _random = new Random.secure();
 
-  SudokuGameGenerator() {
-    initialize();
-  }
+  // List of middlepoint positions
+  List<Point<int>> middlepoints;
+  List<List<Point<int>>> diagonalPoints;
+  List<List<Point<int>>> hyperPoints;
+  List<List<Point<int>>> colorPoints;
 
-  void initialize() {
-    // initialize middlepoints
+  SudokuGameGenerator() {
+    // initialize middlepoint positions
     middlepoints = new List<Point<int>>();
     for(int i = 1; i <= 7; i = i + 3) {
       for(int j = 1; j <= 7; j = j + 3) {
@@ -145,6 +144,22 @@ class SudokuGameGenerator {
       }
     }
 
+    // initialize diagonal positions
+    diagonalPoints = new List<List<Point<int>>>();
+    // if number is in diagonal from top left to bottom right
+    List<Point<int>> firstDiagonal = new List<Point<int>>();
+    List<Point<int>> secondDiagonal = new List<Point<int>>();
+    for(int i = 0; i < 9; i++) {
+      Point<int> firstPoint = new Point(i, i);
+      firstDiagonal.add(firstPoint);
+
+      Point<int> secondPoint = new Point(i, 8 - i);
+      secondDiagonal.add(secondPoint);
+    }
+    diagonalPoints.add(firstDiagonal);
+    diagonalPoints.add(secondDiagonal);
+
+    // Load jsonFiles for nonomino sudokus
     jsonLevelFiles = new List<String>();
 
     String folder = "nonomino";
@@ -152,10 +167,9 @@ class SudokuGameGenerator {
       String path = "../levels/" + folder + "/level" + i.toString() + ".json";
       loadJsonFiles(path);
     }
-
   }
 
-
+  // asynchronously loads jsonFiles for nonomino sudokus
   loadJsonFiles(String path) async {
     await HttpRequest.getString(path).then((content) => addLevelToList(content, path));
   }
@@ -223,7 +237,7 @@ class SudokuGameGenerator {
   abstractSudoku newNonominoSudoku() {
     Map level = JSON.decode(jsonLevelFiles[1]);
 
-    _sudoku = new abstractSudoku();
+    abstractSudoku sudoku = new abstractSudoku();
 
     List<List<int>> gameFieldSolved = level["fields"];
     List<List<bool>> userInput = createUserInputValues(level["empty"], 1);
@@ -317,16 +331,16 @@ class SudokuGameGenerator {
 
 
     }
-    _sudoku.setSides(sides);
+    sudoku.setSides(sides);
 
 
 
 
-    _sudoku.setGameFieldSolved(gameFieldSolved);
-    _sudoku.setGameField(gameField);
-    _sudoku.setUserInput(userInput);
-    _sudoku.setRegions(totalList);
-    _sudoku.setColors(colors);
+    sudoku.setGameFieldSolved(gameFieldSolved);
+    sudoku.setGameField(gameField);
+    sudoku.setUserInput(userInput);
+    sudoku.setRegions(totalList);
+    sudoku.setColors(colors);
 
 
     /*
@@ -339,7 +353,7 @@ class SudokuGameGenerator {
     print("UserInput: " + userInput.toString());
     */
 
-    return _sudoku;
+    return sudoku;
   }
 
   List<List<int>> generateGame(GameTypes gameType) {
@@ -505,7 +519,7 @@ class SudokuGameGenerator {
 
     // Middlepoint
     if(gameType == GameTypes.MIDDELPOINT_SUDOKU)
-      removeNumberFromCenterSquares(x, y, number, nextSets);
+      removeNumberFromMiddlepoints(x, y, number, nextSets);
 
     // Color
     if(gameType == GameTypes.COLOR_SUDOKU)
@@ -539,6 +553,20 @@ class SudokuGameGenerator {
   }
 
   void removeNumberFromDiagonals(int x, int y, int number, List<List<List<int>>> sets) {
+
+    Point<int> positionPoint = new Point(x, y);
+    for(List<Point<int>> diagonal in diagonalPoints) {
+      if(diagonal.contains(positionPoint)) {
+        for(Point<int> point in diagonal) {
+          int cellIndex = sets[point.x][point.y].indexOf(number);
+          if(cellIndex >= 0)
+            sets[point.x][point.y] .removeAt(cellIndex);
+        }
+      }
+    }
+
+    /*
+
     // if number is in diagonal from top left to bottom right
     if(x == y) {
       for(int i = 0; i < 9; i++) {
@@ -556,14 +584,38 @@ class SudokuGameGenerator {
           sets[i][8 - i].removeAt(cellIndex);
       }
     }
+
+    */
   }
 
   // TODO implement
   void removeNumberFromHyperSquares(int x, int y, int number, List<List<List<int>>> sets) {
 
+    bool top = false;
+    bool bottom = false;
+    bool left = false;
+    bool right = false;
+
+    if(x >= 1 && x <= 3)
+      top = true;
+    else if(x >= 5 && x <= 7)
+      bottom = true;
+
+    if(y >= 1 && y <= 3)
+      left = true;
+    else if(y >= 5 && y <= 7)
+      right = true;
+
+    if((top || bottom) && (left || right)) {
+
+    }
+    else
+      return;
+
+
   }
 
-  void removeNumberFromCenterSquares(int x, int y, int number, List<List<List<int>>> sets) {
+  void removeNumberFromMiddlepoints(int x, int y, int number, List<List<List<int>>> sets) {
 
     Point<int> positionPoint = new Point(x, y);
     if(middlepoints.contains(positionPoint)) {
@@ -584,19 +636,20 @@ class SudokuGameGenerator {
 
   abstractSudoku newSudoku(GameTypes gameType) {
 
+    abstractSudoku sudoku = new abstractSudoku();
+
     // Create new solved sudoku
-    _gameFieldSolved = generateGame(gameType);
+    List<List<int>> gameFieldSolved = generateGame(gameType);
 
     // Delete fields
-    _gameField = createUserSudoku(_gameFieldSolved);
+   List<List<int>> gameField = createUserSudoku(gameFieldSolved);
 
     // Set empty fields as userInput
-    _userInput = createUserInputValues(_gameField, -1);
+    List<List<bool>>userInput = createUserInputValues(gameField, -1);
 
-    _sudoku = new abstractSudoku();
-    _sudoku.setGameFieldSolved(_gameFieldSolved);
-    _sudoku.setGameField(_gameField);
-    _sudoku.setUserInput(_userInput);
+    sudoku.setGameFieldSolved(gameFieldSolved);
+    sudoku.setGameField(gameField);
+    sudoku.setUserInput(userInput);
 
 
     // TODO Regions necessary?
@@ -625,10 +678,10 @@ class SudokuGameGenerator {
 
     //TODO make variable, add other color schemes
     // Create Colors
-    List<List<Colors>> colors = new List<List<Colors>>(_gameFieldSolved.length);
-    for(int i = 0; i < _gameFieldSolved.length; i++) {
-      List<Colors> colorRow  = new List<Colors>(_gameFieldSolved[0].length);
-      for(int j = 0; j < _gameFieldSolved[0].length; j++) {
+    List<List<Colors>> colors = new List<List<Colors>>(gameFieldSolved.length);
+    for(int i = 0; i < gameFieldSolved.length; i++) {
+      List<Colors> colorRow  = new List<Colors>(gameFieldSolved[0].length);
+      for(int j = 0; j < gameFieldSolved[0].length; j++) {
 
         // Test Colors
         switch(j) {
@@ -691,12 +744,12 @@ class SudokuGameGenerator {
 
 
     }
-    _sudoku.setSides(sides);
+    sudoku.setSides(sides);
 
 
-    _sudoku.setColors(colors);
+    sudoku.setColors(colors);
 
-    return _sudoku;
+    return sudoku;
   }
 
 
@@ -803,24 +856,7 @@ class SudokuGameGenerator {
     return 1;
   }
 
-  List<List<int>> getGameField() {
-    return _sudoku.getGameField();
-  }
 
-  void setGameCell(int row, int col) {
-    _sudoku.setGameCell(row, col);
-  }
 
-  bool isSolved() {
-    return _sudoku.isSolved();
-  }
 
-  void setControlValue(String value) {
-    int controlValue = int.parse(value);
-    _sudoku.setControlValue(controlValue);
-    print("Control Value: " + controlValue.toString());
-  }
-  int getControlValue() {
-    return _sudoku.getControlValue();
-  }
 }

@@ -22,6 +22,7 @@ class SudokuController {
   int _clockCount = 0;
 
   SudokuGameGenerator _model;
+  abstractSudoku _sudoku;
 
   SudokuView _view;
 
@@ -98,15 +99,15 @@ class SudokuController {
 
   void newGame(GameTypes gameType) {
     print(gameType);
-    abstractSudoku test = _model.newGame(gameType);
-    print(test);
+    _sudoku = _model.newGame(gameType);
+    print(_sudoku);
     /*
     print(test.getGameFieldSolved());
     print(test.getGameField());
     print(test.getUserInput());
     */
 
-    _view.setModel(test);
+    _view.setModel(_sudoku);
     _view.initialUpdate();
     _view.update();
     _view.showHelp(_help);
@@ -123,7 +124,7 @@ class SudokuController {
     String cellID = cell.id.substring(5);
     int cellRow = int.parse(cellID.substring(0, 1));
     int cellCol = int.parse(cellID.substring(2));
-    _model.setGameCell(cellRow, cellCol);
+    _sudoku.setGameCell(cellRow, cellCol);
 
     _view.update();
     _view.showHelp(_help);
@@ -133,7 +134,7 @@ class SudokuController {
 
   void controlCell(TableCellElement cell) {
 
-    _model.setControlValue(cell.text);
+    _sudoku.setControlValue(cell.text);
     _view.updateControl(cell);
     _view.showHelp(_help);
   }

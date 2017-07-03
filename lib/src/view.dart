@@ -137,9 +137,13 @@ class SudokuView {
     actualCell.classes.add("selectedControl");
   }
 
-  //TODO fix colors
   void initialUpdate() {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
+
+    List<List<int>> gameField = _model.getGameField();
+    List<List<Colors>> colors = _model.getColors();
+    List<List<Sides>> sides = _model.getSides();
+
     for(TableCellElement cell in gameCells) {
       cell.classes.clear();
       cell.classes.add("GameCell");
@@ -147,15 +151,15 @@ class SudokuView {
       String cellID = cell.id.substring(5);
       int cellRow = int.parse(cellID.substring(0, 1));
       int cellCol = int.parse(cellID.substring(2));
-      if(_model.getGameField()[cellRow][cellCol] != -1)
+      if(gameField[cellRow][cellCol] != -1)
       cell.classes.add("fixedGameField");
-      String color = _model.getColors()[cellRow][cellCol].toString();
+      String color = colors[cellRow][cellCol].toString();
       color = color.substring(7);
       cell.classes.add(color);
 
 
-      if(_model.getSides() != null){
-        Sides s= _model.getSides()[cellRow][cellCol];
+      if(sides != null){
+        Sides s = sides[cellRow][cellCol];
 
         cell.dataset.putIfAbsent("col", ()=>"$cellCol");
         cell.dataset.putIfAbsent("row", ()=>"$cellRow");
@@ -213,10 +217,12 @@ class SudokuView {
   }
 
 
+  //TODO improve clock to hh:mm:ss
   void updateClock(int clockCount) {
     _clock.text = clockCount.toString();
   }
 
+  // TODO set overlay, not title text
   void updateWin() {
     if(_model.isSolved())
       _title.text = "WIN";
