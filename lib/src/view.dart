@@ -180,7 +180,6 @@ class SudokuView {
 
 
     }
-    _title.text = ">sudo ku";
 
 /*
     for(int i=0;i<9;i++){
@@ -227,7 +226,7 @@ class SudokuView {
   void updateNewGame() {
     _overlay.innerHtml =
     "<div id='newGame'>"
-      "<table>"
+      "<table id='newGameTable'>"
         "<tr>"
           "<td>"
             "<img src='img/Standard-Sudoku.png' id ='newStandardSudoku' class='newGame' alt='Standard-Sudoku'>"
@@ -235,21 +234,23 @@ class SudokuView {
           "<td>"
             "<img src='img/X-Sudoku.png' id ='newXSudoku' class='newGame' alt='X-Sudoku'>"
           "</td>"
-          "<td>"
-            "<img src='img/Hyper-Sudoku.png' id ='newHyperSudoku' class='newGame' alt='Hyper-Sudoku'>"
-          "</td>"
         "</tr>"
         "<tr>"
           "<td>"
+            "<img src='img/Hyper-Sudoku.png' id ='newHyperSudoku' class='newGame' alt='Hyper-Sudoku'>"
+          "</td>"
+          "<td>"
             "<img src='img/Middlepoint-Sudoku.png' id ='newMiddlepointSudoku' class='newGame' alt='Middlepoint-Sudoku'>"
           "</td>"
-          "<td>"
-            "<img src='img/Color-Sudoku.png' id ='newColorSudoku' class='newGame' alt='Color-Sudoku'>"
-          "</td>"
-          "<td>"
-            "<img src='img/Nonomino-Sudoku.png' id ='newNonominoSudoku' class='newGame' alt='Nonomino-Sudoku'>"
-          "</td>"
-        "</tr>"
+          "</tr>"
+          "<tr>"
+            "<td>"
+              "<img src='img/Color-Sudoku.png' id ='newColorSudoku' class='newGame' alt='Color-Sudoku'>"
+            "</td>"
+            "<td>"
+             "<img src='img/Nonomino-Sudoku.png' id ='newNonominoSudoku' class='newGame' alt='Nonomino-Sudoku'>"
+            "</td>"
+          "</tr>"
       "</table>"
     "</div>"
     ;
@@ -301,6 +302,7 @@ class SudokuView {
     if(isMobile.matches) {
       print("Mobile");
       if(orientationLandscape.matches) {
+        print("Landscape");
         _warningOverlay.innerHtml =
         "<h1>"
             "Please rotate device!"
@@ -308,14 +310,14 @@ class SudokuView {
         "<img src='img/Logo_Hell.png' id='logo' class='logo' alt='Sudoku'>"
         ;
 
-        _warningOverlay.style.display = "block";
         _container.style.display = "none";
 
 
       }
       else {
+        print("Portrait");
         _warningOverlay.innerHtml = "";
-        _container.style.display = "block";
+        _container.style.display = "initial";
 
 
       }
@@ -324,7 +326,7 @@ class SudokuView {
       print("Desktop");
 
       _warningOverlay.innerHtml = "";
-      _container.style.display = "block";
+      _container.style.display = "initial";
 
     }
 
