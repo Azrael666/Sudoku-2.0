@@ -75,6 +75,11 @@ class abstractSudoku {
   }
 
   void setControlValue(String value) {
+    if(value == "show"){
+      _controlValue = -2;
+      return;
+    }
+
     int controlValue = int.parse(value);
     this._controlValue = controlValue;
     print("Control Value: " + controlValue.toString());
@@ -111,6 +116,8 @@ class abstractSudoku {
     if(_userInput[row][col]) {
       if (_gameField[row][col] == _controlValue)
         _gameField[row][col] = -1;
+      else if(_controlValue == -2)
+        _gameField[row][col] = _gameFieldSolved[row][col];
       else
         _gameField[row][col] = _controlValue;
     }

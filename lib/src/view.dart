@@ -70,8 +70,13 @@ class SudokuView {
 
   void createControlTable() {
     print("Create Control Table");
+
+
+    // warum ist das hier?
     TableElement table =  new TableElement();
     table.id = "control_table";
+
+
 
     int count = 1;
     for(int i = 0; i < _controlTableRows; i++) {
@@ -92,6 +97,17 @@ class SudokuView {
         count++;
       }
     }
+
+    TableRowElement row = _controlField.addRow();
+    TableCellElement cell = row.addCell();
+    cell.id = "show";
+    //cell.classes.add("ControllCell");
+    cell.text = "show";
+    cell.colSpan= 3;
+
+
+
+
 
     int tableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
     print("Control Table Size: " + tableSize.toString());

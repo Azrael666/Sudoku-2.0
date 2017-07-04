@@ -41,17 +41,23 @@ class SudokuController {
     window.addEventListener('resize', windowResize);
 
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
-    for(TableCellElement cell in gameCells) {
+    for (TableCellElement cell in gameCells) {
       cell.addEventListener('click',
-      (event) => gameCell(cell));
+              (event) => gameCell(cell));
     }
 
-    List<TableCellElement> controlCells = document.querySelectorAll(".ControlCell");
-    for(TableCellElement cell in controlCells) {
+    List<TableCellElement> controlCells = document.querySelectorAll(
+        ".ControlCell");
+    for (TableCellElement cell in controlCells) {
       cell.addEventListener('click',
               (event) => controlCell(cell));
     }
+
+    TableCellElement cell = document.querySelector("#show");
+    cell.addEventListener('click',
+            (event) => showCell(cell));
   }
+
 
   void clock() {
     _view.updateClock(stopwatch.elapsed);
@@ -162,6 +168,14 @@ class SudokuController {
               (event) => _overlay.innerHtml = "");
     }
 
+  }
+
+  void showCell(TableCellElement cell){
+    if(_sudoku != null) {
+      _sudoku.setControlValue("show");
+      _view.updateControl(cell);
+      //_view.showHelp(_help);
+    }
   }
 
   void controlCell(TableCellElement cell) {
