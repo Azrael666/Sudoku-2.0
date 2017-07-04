@@ -9,6 +9,9 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/web/img/packages" />
+      <excludeFolder url="file://$MODULE_DIR$/web/levels/nonomino/packages" />
+      <excludeFolder url="file://$MODULE_DIR$/web/levels/packages" />
+      <excludeFolder url="file://$MODULE_DIR$/web/levels/x-sudoku/packages" />
       <excludeFolder url="file://$MODULE_DIR$/web/packages" />
     </content>
     <orderEntry type="inheritedJdk" />

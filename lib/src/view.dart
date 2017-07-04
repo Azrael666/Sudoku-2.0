@@ -224,6 +224,37 @@ class SudokuView {
     _clock.text = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString();
   }
 
+  void updateNewGame() {
+    _overlay.innerHtml =
+    "<div id='newGame'>"
+      "<table>"
+        "<tr>"
+          "<td>"
+            "<img src='img/Standard-Sudoku.png' id ='newStandardSudoku' class='newGame' alt='Standard-Sudoku'>"
+          "</td>"
+          "<td>"
+            "<img src='img/X-Sudoku.png' id ='newXSudoku' class='newGame' alt='X-Sudoku'>"
+          "</td>"
+          "<td>"
+            "<img src='img/Hyper-Sudoku.png' id ='newHyperSudoku' class='newGame' alt='Hyper-Sudoku'>"
+          "</td>"
+        "</tr>"
+        "<tr>"
+          "<td>"
+            "<img src='img/Middlepoint-Sudoku.png' id ='newMiddlepointSudoku' class='newGame' alt='Middlepoint-Sudoku'>"
+          "</td>"
+          "<td>"
+            "<img src='img/Color-Sudoku.png' id ='newColorSudoku' class='newGame' alt='Color-Sudoku'>"
+          "</td>"
+          "<td>"
+            "<img src='img/Nonomino-Sudoku.png' id ='newNonominoSudoku' class='newGame' alt='Nonomino-Sudoku'>"
+          "</td>"
+        "</tr>"
+      "</table>"
+    "</div>"
+    ;
+  }
+
   void updateWin(Duration time) {
     int hours = time.inHours % 24;
     int minutes = time.inMinutes % 60;
@@ -272,11 +303,12 @@ class SudokuView {
       if(orientationLandscape.matches) {
         _warningOverlay.innerHtml =
         "<h1>"
-            "Please rotate Device!"
+            "Please rotate device!"
         "</h1>"
         "<img src='img/Logo_Hell.png' id='logo' class='logo' alt='Sudoku'>"
-            ;
+        ;
 
+        _warningOverlay.style.display = "block";
         _container.style.display = "none";
 
 

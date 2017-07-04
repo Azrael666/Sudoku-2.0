@@ -221,7 +221,7 @@ class SudokuGameGenerator {
 
     String folder = "nonomino";
     for (int i = 1; i < 4; i++) {
-      String path = "levels/" + folder + "/level" + i.toString() + ".json";
+      String path = "level/" + folder + "/level" + i.toString() + ".json";
       loadJsonFiles(path);
     }
   }

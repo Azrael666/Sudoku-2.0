@@ -8,12 +8,7 @@ part of sudokulib;
 class SudokuController {
 
   final _overlay = document.getElementById("overlay");
-  final _standardSudokuButton = document.getElementById("standardSudokuButton");
-  final _xSudokuButton = document.getElementById("xSudokuButton");
-  final _hyperSudokuButton = document.getElementById("hyperSudokuButton");
-  final _middlepointSudokuButton = document.getElementById("middlepointSudokuButton");
-  final _colorSudokuButton = document.getElementById("colorSudokuButton");
-  final _nonominoSudokuButton = document.getElementById("nonominoSudokuButton");
+  final _newGameButton = document.getElementById("newGameButton");
   final _helpButton = document.getElementById("helpButton");
   bool _help = false;
 
@@ -32,7 +27,6 @@ class SudokuController {
 
     addControlStuff();
     print(window.navigator.userAgent);
-
   }
 
   addControlStuff() {
@@ -40,15 +34,8 @@ class SudokuController {
 
     clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
     stopwatch = new Stopwatch();
-    stopwatch.start();
 
-    _standardSudokuButton.addEventListener('click', newStandardSudoku);
-    _xSudokuButton.addEventListener('click', newXSudoku);
-    _hyperSudokuButton.addEventListener('click', newHyperSudoku);
-    _middlepointSudokuButton.addEventListener('click', newMiddlepointSudoku);
-    _colorSudokuButton.addEventListener('click', newColorSudoku);
-    _nonominoSudokuButton.addEventListener('click', newNonominoSudoku);
-
+    _newGameButton.addEventListener('click', newGameButton);
     _helpButton.addEventListener('click', helpFunc);
 
     window.addEventListener('resize', windowResize);
@@ -98,6 +85,29 @@ class SudokuController {
     newGame(GameTypes.NONOMINO_SUDOKU);
   }
 
+  void newGameButton(e) {
+    _view.updateNewGame();
+
+    HtmlElement standardButton = document.getElementById("newStandardSudoku");
+    HtmlElement xButton = document.getElementById("newXSudoku");
+    HtmlElement hyperButton = document.getElementById("newHyperSudoku");
+    HtmlElement middlepointButton = document.getElementById("newMiddlepointSudoku");
+    HtmlElement colorButton = document.getElementById("newColorSudoku");
+    HtmlElement nonominoButton = document.getElementById("newNonominoSudoku");
+
+    standardButton.addEventListener('click', newStandardSudoku);
+    xButton.addEventListener('click', newXSudoku);
+    hyperButton.addEventListener('click', newHyperSudoku);
+    middlepointButton.addEventListener('click', newMiddlepointSudoku);
+    colorButton.addEventListener('click', newColorSudoku);
+    nonominoButton.addEventListener('click', newNonominoSudoku);
+
+
+    _overlay.addEventListener('click',
+            (event) => _overlay.innerHtml = "");
+
+  }
+
   void newGame(GameTypes gameType) {
     print(gameType);
     _sudoku = _model.newGame(gameType);
@@ -119,6 +129,7 @@ class SudokuController {
   }
 
   void helpFunc(e) {
+    print("asdf");
     if(_sudoku != null) {
       _help = !_help;
       _view.showHelp(_help);
