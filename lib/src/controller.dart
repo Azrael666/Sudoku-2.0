@@ -114,6 +114,7 @@ class SudokuController {
     _view.showHelp(_help);
     _view.setControl();
     stopwatch.reset();
+    stopwatch.start();
     _view.updateClock(stopwatch.elapsed);
   }
 
@@ -134,8 +135,22 @@ class SudokuController {
       _view.update();
       _view.showHelp(_help);
 
-      _view.updateWin();
+      updateWin();
+
     }
+  }
+
+  void updateWin() {
+
+    if(_sudoku.isSolved()) {
+      stopwatch.stop();
+
+      _view.updateWin(stopwatch.elapsed);
+
+      _overlay.addEventListener('click',
+              (event) => _overlay.innerHtml = "");
+    }
+
   }
 
   void controlCell(TableCellElement cell) {

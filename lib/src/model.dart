@@ -256,7 +256,7 @@ class SudokuGameGenerator {
 
     // TODO remove fields from gameField
     // Currently just dummy implementation
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 1; i++) {
       int row = _random.nextInt(9);
       int col = _random.nextInt(9);
       userSudoku[row][col] = -1;

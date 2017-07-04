@@ -224,27 +224,22 @@ class SudokuView {
     _clock.text = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString();
   }
 
-  // TODO set overlay, not title text
-  void updateWin() {
-    if(_model.isSolved()) {
-      _title.text = "WIN";
+  void updateWin(Duration time) {
+    int hours = time.inHours % 24;
+    int minutes = time.inMinutes % 60;
+    int seconds = time.inSeconds % 60;
 
-      /*
-      _overlay.innerHtml =
-      "test";
-
-      _container.style.display = "none";
-      */
-    }
-    else {
-      _title.text = ">sudo ku";
-
-      /*
-      _warningOverlay.innerHtml = "";
-      _container.style.display = "block";
-      */
-    }
+    _overlay.innerHtml =
+    "<div id='win'>"
+      "<p>"
+        "You have solved the sudoku in"
+      "<p>"
+      "<p>"
+      "Hours: " + hours.toString() + " Minutes: " + minutes.toString() + " Seconds: " + seconds.toString();
+      "<p>"
+    "</div>";
   }
+
 
   void showHelp(bool help) {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
@@ -279,7 +274,7 @@ class SudokuView {
         "<h1>"
             "Please rotate Device!"
         "</h1>"
-        //"<img id='logo' class='logo' alt='Sudoku'>"
+        "<img src='img/Logo_Hell.png' id='logo' class='logo' alt='Sudoku'>"
             ;
 
         _container.style.display = "none";
