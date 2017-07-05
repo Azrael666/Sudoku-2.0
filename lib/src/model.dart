@@ -373,6 +373,118 @@ class SudokuGenerator {
   }
 
   /**
+   * Create a new [Sudoku] according to [gameType].
+   */
+  Sudoku newSudoku(GameTypes gameType) {
+    Sudoku sudoku = new Sudoku();
+
+    // Create new solved sudoku
+    List<List<int>> gameFieldSolved = generateGame(gameType);
+
+    // Delete fields
+    List<List<int>> gameField = createUserSudoku(gameFieldSolved);
+
+    // Set empty fields as userInput
+    List<List<bool>>userInput = createUserInputValues(gameField, -1);
+
+    sudoku.setGameFieldSolved(gameFieldSolved);
+    sudoku.setGameField(gameField);
+    sudoku.setUserInput(userInput);
+
+
+    // From this point until the end of this method author: Kevin Joe Reif
+
+    // Create Colors
+    List<List<Colors>> colors = new List<List<Colors>>(gameFieldSolved.length);
+
+    for(int i = 0; i < gameFieldSolved.length; i++) {
+      List<Colors> colorRow  = new List<Colors>(gameFieldSolved[0].length);
+      for(int j = 0; j < gameFieldSolved[0].length; j++) {
+
+        // Standard Colors
+        if((i >= 3 && i <= 5 && (j < 3 || j > 5)) || (j >= 3 && j <= 5 && (i < 3 || i > 5)))
+          colorRow[j] = Colors.COLOR_STANDARD_DARK;
+        else
+          colorRow[j] = Colors.COLOR_STANDARD;
+
+      }
+      colors[i] = colorRow;
+    }
+
+    if(gameType == GameTypes.X_SUDOKU){
+      for(int i=0;i<9;i++){
+        colors[8-i][i]  = colors[i][i] = Colors.COLOR_HIGHLIGHTED;
+
+      }
+    }
+
+    if(gameType == GameTypes.MIDDELPOINT_SUDOKU){
+      for(int i=0;i<3;i++){
+        for(int i1=0;i1<3;i1++){
+          colors[i*3+1][i1*3+1] = Colors.COLOR_HIGHLIGHTED;
+        }
+      }
+    }
+
+
+    if(gameType  == GameTypes.HYPER_SUDOKU){
+      for(int i=0;i<2;i++){
+        for(int i1=0;i1<2;i1++){
+
+          for(int i2=0;i2<3;i2++){
+            for(int i3=0;i3<3;i3++){
+              colors[i*4+1+i2][i1*4+1+i3] = Colors.COLOR_HIGHLIGHTED;
+
+            }
+          }
+        }
+
+      }
+    }
+
+    if(gameType == GameTypes.COLOR_SUDOKU){
+      List<Colors> list = [Colors.COLOR_1,Colors.COLOR_2,Colors.COLOR_3,Colors.COLOR_4,Colors.COLOR_5,Colors.COLOR_6,Colors.COLOR_7,Colors.COLOR_8,Colors.COLOR_9];
+      list.shuffle();
+
+      for(int i=0;i<3;i++){
+        for(int i1=0;i1<3;i1++){
+
+          for(int i2=0;i2<3;i2++){
+            for(int i3=0;i3<3;i3++){
+              colors[i*3+i2][i1*3+i3] = list[i2*3+i3];
+            }
+          }
+
+        }
+      }
+    }
+
+    List<List<Sides>> sides = new List();
+    for (int i = 0; i < 9; i++) {
+      List<Sides> lis = new List();
+      for (int i1 = 0; i1 < 9; i1++) {
+        Sides s = new Sides();
+        s.left = (i1 % 3 == 0) ? BorderType.THICK : BorderType.THIN;
+        s.right = (i1 % 3 == 2) ? BorderType.THICK : BorderType.THIN;
+        s.top = (i % 3 == 0) ? BorderType.THICK : BorderType.THIN;
+        s.bottom = (i % 3 == 2) ? BorderType.THICK : BorderType.THIN;
+
+
+        s.row = i;
+        s.col = i1;
+        lis.add(s);
+      }
+      sides.add(lis);
+    }
+    sudoku.setSides(sides);
+
+
+    sudoku.setColors(colors);
+
+    return sudoku;
+  }
+
+  /**
    * Randomly removes numbers from sudoku
    */
   List<List<int>> createUserSudoku(List<List<int>> sudoku) {
@@ -795,117 +907,7 @@ class SudokuGenerator {
     }
   }
 
-  /**
-   * Create a new [Sudoku] according to [gameType].
-   */
-  Sudoku newSudoku(GameTypes gameType) {
-    Sudoku sudoku = new Sudoku();
 
-    // Create new solved sudoku
-    List<List<int>> gameFieldSolved = generateGame(gameType);
-
-    // Delete fields
-    List<List<int>> gameField = createUserSudoku(gameFieldSolved);
-
-    // Set empty fields as userInput
-    List<List<bool>>userInput = createUserInputValues(gameField, -1);
-
-    sudoku.setGameFieldSolved(gameFieldSolved);
-    sudoku.setGameField(gameField);
-    sudoku.setUserInput(userInput);
-
-
-    // From this point until the end of this method author: Kevin Joe Reif
-
-    // Create Colors
-    List<List<Colors>> colors = new List<List<Colors>>(gameFieldSolved.length);
-
-    for(int i = 0; i < gameFieldSolved.length; i++) {
-      List<Colors> colorRow  = new List<Colors>(gameFieldSolved[0].length);
-      for(int j = 0; j < gameFieldSolved[0].length; j++) {
-
-        // Standard Colors
-        if((i >= 3 && i <= 5 && (j < 3 || j > 5)) || (j >= 3 && j <= 5 && (i < 3 || i > 5)))
-          colorRow[j] = Colors.COLOR_STANDARD_DARK;
-        else
-          colorRow[j] = Colors.COLOR_STANDARD;
-
-      }
-      colors[i] = colorRow;
-    }
-
-    if(gameType == GameTypes.X_SUDOKU){
-      for(int i=0;i<9;i++){
-        colors[8-i][i]  = colors[i][i] = Colors.COLOR_HIGHLIGHTED;
-
-      }
-    }
-
-    if(gameType == GameTypes.MIDDELPOINT_SUDOKU){
-      for(int i=0;i<3;i++){
-        for(int i1=0;i1<3;i1++){
-          colors[i*3+1][i1*3+1] = Colors.COLOR_HIGHLIGHTED;
-        }
-      }
-    }
-
-
-    if(gameType  == GameTypes.HYPER_SUDOKU){
-      for(int i=0;i<2;i++){
-        for(int i1=0;i1<2;i1++){
-
-          for(int i2=0;i2<3;i2++){
-            for(int i3=0;i3<3;i3++){
-              colors[i*4+1+i2][i1*4+1+i3] = Colors.COLOR_HIGHLIGHTED;
-
-            }
-          }
-        }
-
-      }
-    }
-
-    if(gameType == GameTypes.COLOR_SUDOKU){
-      List<Colors> list = [Colors.COLOR_1,Colors.COLOR_2,Colors.COLOR_3,Colors.COLOR_4,Colors.COLOR_5,Colors.COLOR_6,Colors.COLOR_7,Colors.COLOR_8,Colors.COLOR_9];
-      list.shuffle();
-
-      for(int i=0;i<3;i++){
-        for(int i1=0;i1<3;i1++){
-
-          for(int i2=0;i2<3;i2++){
-            for(int i3=0;i3<3;i3++){
-              colors[i*3+i2][i1*3+i3] = list[i2*3+i3];
-            }
-          }
-
-        }
-      }
-    }
-
-    List<List<Sides>> sides = new List();
-    for (int i = 0; i < 9; i++) {
-      List<Sides> lis = new List();
-      for (int i1 = 0; i1 < 9; i1++) {
-        Sides s = new Sides();
-        s.left = (i1 % 3 == 0) ? BorderType.THICK : BorderType.THIN;
-        s.right = (i1 % 3 == 2) ? BorderType.THICK : BorderType.THIN;
-        s.top = (i % 3 == 0) ? BorderType.THICK : BorderType.THIN;
-        s.bottom = (i % 3 == 2) ? BorderType.THICK : BorderType.THIN;
-
-
-        s.row = i;
-        s.col = i1;
-        lis.add(s);
-      }
-      sides.add(lis);
-    }
-    sudoku.setSides(sides);
-
-
-    sudoku.setColors(colors);
-
-    return sudoku;
-  }
 
   /**
    * Returns list of available fields according to given [userInputValues] found in json file.
