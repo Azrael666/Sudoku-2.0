@@ -254,7 +254,7 @@ class SudokuController {
       // Set game cell
       _sudoku.setGameCell(cellRow, cellCol);
 
-      // update view
+      // Update view
       _view.update();
       _view.showHelp(_help);
       updateWin();
