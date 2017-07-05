@@ -11,7 +11,6 @@
       <excludeFolder url="file://$MODULE_DIR$/web/img/packages" />
       <excludeFolder url="file://$MODULE_DIR$/web/level/nonomino/packages" />
       <excludeFolder url="file://$MODULE_DIR$/web/level/packages" />
-      <excludeFolder url="file://$MODULE_DIR$/web/level/x-sudoku/packages" />
       <excludeFolder url="file://$MODULE_DIR$/web/packages" />
     </content>
     <orderEntry type="inheritedJdk" />

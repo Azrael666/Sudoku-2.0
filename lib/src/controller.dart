@@ -10,12 +10,12 @@ class SudokuController {
   final _helpButton = document.getElementById("helpButton");
   bool _hint = false;
 
-  final clockTriggerSpeed = const Duration(milliseconds: 1000);
-  Timer clockTrigger;
-  Stopwatch stopwatch;
+  final _clockTriggerSpeed = const Duration(milliseconds: 1000);
+  Timer _clockTrigger;
+  Stopwatch _stopwatch;
 
   SudokuGameGenerator _model;
-  abstractSudoku _sudoku;
+  Sudoku _sudoku;
 
   SudokuView _view;
 
@@ -28,8 +28,8 @@ class SudokuController {
 
   addControlStuff() {
 
-    clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
-    stopwatch = new Stopwatch();
+    _clockTrigger = new Timer.periodic(_clockTriggerSpeed, (_) => clock());
+    _stopwatch = new Stopwatch();
 
     _newGameButton.addEventListener('click', newGameButton);
     _helpButton.addEventListener('click', hintFunc);
@@ -49,14 +49,14 @@ class SudokuController {
               (event) => controlCell(cell));
     }
 
-    TableCellElement cell = document.querySelector("#Control_Show");
+    TableCellElement cell = document.querySelector("#Control_Hint");
     cell.addEventListener('click',
             (event) => showCell(cell));
   }
 
 
   void clock() {
-    _view.updateClock(stopwatch.elapsed);
+    _view.updateClock(_stopwatch.elapsed);
   }
 
   void windowResize(e) {
@@ -116,17 +116,17 @@ class SudokuController {
     _view.setModel(_sudoku);
     _view.initialUpdate();
     _view.update();
-    _view.showHint(_hint);
+    _view.showHelp(_hint);
     _view.setControl();
-    stopwatch.reset();
-    stopwatch.start();
-    _view.updateClock(stopwatch.elapsed);
+    _stopwatch.reset();
+    _stopwatch.start();
+    _view.updateClock(_stopwatch.elapsed);
   }
 
   void hintFunc(e) {
     if(_sudoku != null) {
       _hint = !_hint;
-      _view.showHint(_hint);
+      _view.showHelp(_hint);
     }
   }
 
@@ -138,7 +138,7 @@ class SudokuController {
       _sudoku.setGameCell(cellRow, cellCol);
 
       _view.update();
-      _view.showHint(_hint);
+      _view.showHelp(_hint);
 
       updateWin();
 
@@ -148,9 +148,9 @@ class SudokuController {
   void updateWin() {
 
     if(_sudoku.isSolved()) {
-      stopwatch.stop();
+      _stopwatch.stop();
 
-      _view.updateWin(stopwatch.elapsed);
+      _view.updateWin(_stopwatch.elapsed);
 
       _overlay.addEventListener('click',
               (event) => _overlay.innerHtml = "");
@@ -160,18 +160,18 @@ class SudokuController {
 
   void showCell(TableCellElement cell){
     if(_sudoku != null) {
-      _sudoku.setControlValue("show");
+      _sudoku.setControlValue("hint");
       _view.updateControl(cell);
-      _view.showHint(_hint);
+      _view.showHelp(_hint);
     }
   }
 
   void controlCell(TableCellElement cell) {
     if(_sudoku != null) {
-      if(!cell.text.contains("show")) {
+      if(!cell.text.contains("hint")) {
         _sudoku.setControlValue(cell.text);
         _view.updateControl(cell);
-        _view.showHint(_hint);
+        _view.showHelp(_hint);
       }
     }
   }

@@ -3,8 +3,12 @@
 
 part of sudokulib;
 
+/**
+ * A [SudokuView] reflects the state of the current [Sudoku]
+ * to the user by interacting with the DOM tree
+ */
 class SudokuView {
-  abstractSudoku _model;
+  Sudoku _model;
 
   static int _gameTableRows = 9;
   static int _gameTableCols = 9;
@@ -40,9 +44,6 @@ class SudokuView {
         tableCell.id = "Game_" + i.toString() + "_" + j.toString();
         tableCell.classes.add("GameCell");
 
-
-
-
       }
     }
     int tableSize = getTableSize();
@@ -52,7 +53,6 @@ class SudokuView {
   }
 
   int getTableSize() {
-    //int tableWidth = (window.innerWidth * gameTableWidthPercent / 100).toInt();
     int tableWidth = window.innerWidth * _gameTableWidthPercent ~/ 100;
     int tableHeight = window.innerHeight * _gameTableHeightPercent ~/ 100;
 
@@ -82,9 +82,9 @@ class SudokuView {
 
     TableRowElement row = _controlField.addRow();
     TableCellElement cell = row.addCell();
-    cell.id = "Control_Show";
+    cell.id = "Control_Hint";
     cell.classes.add("ControlCell");
-    cell.text = "show (  )";
+    cell.text = "hint (  )";
     cell.colSpan= 3;
 
 
@@ -109,9 +109,9 @@ class SudokuView {
       }
     }
 
-    // Update show value
-    TableCellElement controlShow = document.getElementById("Control_Show");
-    controlShow.text = "show ( " + _model.getHelpCounter().toString() + " )";
+    // Update hint value
+    TableCellElement controlHint = document.getElementById("Control_Hint");
+    controlHint.text = "hint ( " + _model.getHintCounter().toString() + " )";
   }
   
   void setControl() {
@@ -232,7 +232,7 @@ class SudokuView {
   }
 
 
-  void showHint(bool help) {
+  void showHelp(bool help) {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
     for(TableCellElement cell in gameCells) {
       String cellID = cell.id.substring(5);
@@ -293,7 +293,7 @@ class SudokuView {
     _controlField.style.height = controlTableSize.toString() + "px";
   }
 
-  void setModel(abstractSudoku sudoku) {
+  void setModel(Sudoku sudoku) {
     this._model = sudoku;
   }
 }

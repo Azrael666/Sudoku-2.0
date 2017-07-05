@@ -3,21 +3,24 @@
 
 part of sudokulib;
 
-enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_HIGHLIGHTED, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
-enum GameTypes {STANDARD_SUDOKU, X_SUDOKU, HYPER_SUDOKU, MIDDELPOINT_SUDOKU, COLOR_SUDOKU, NONOMINO_SUDOKU}
+// Border types for cell border of html table cells
 enum BorderType {THICK,THIN}
+// Color types for html table cells
+enum Colors {COLOR_STANDARD, COLOR_STANDARD_DARK, COLOR_HIGHLIGHTED, COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8, COLOR_9}
+// Game types for generating different sudokus
+enum GameTypes {STANDARD_SUDOKU, X_SUDOKU, HYPER_SUDOKU, MIDDELPOINT_SUDOKU, COLOR_SUDOKU, NONOMINO_SUDOKU}
 
 
-class Sides{
-  BorderType left,bottom,right,top;
-
-  int row,col;
-
-  toString() =>"left: $left, bottom:$bottom, right:$right, top:$top ($row,$col)";
-}
 
 
-class abstractSudoku {
+
+/**
+ * Defines a [Sudoku] of this game
+ * A [Sudoku] has different 2D lists for specific information about each sudoku cell
+ * A [Sudoku] has a control value, which displays the currently selected input number or -2 for the "hint" button
+ * A [Sudoku] has a hint counter value, which shows the remaining amount of hints
+ */
+class Sudoku {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
@@ -25,11 +28,11 @@ class abstractSudoku {
   List<List<Sides>> _sides;
 
   int _controlValue;
-  int _helpCounter;
+  int _hintCounter;
 
-  abstractSudoku() {
+  Sudoku() {
     _controlValue = 1;
-    _helpCounter = 5;
+    _hintCounter = 5;
   }
 
   // Checks if the player has solved the sudoku correct
@@ -44,8 +47,20 @@ class abstractSudoku {
     return true;
   }
 
-  List<List<int>> getGameFieldSolved() {
-    return this._gameFieldSolved;
+  setGameCell(int row, int col) {
+    if(_userInput[row][col]) {
+      if(_controlValue == -2) {
+        if(_hintCounter > 0) {
+          _gameField[row][col] = _gameFieldSolved[row][col];
+          _hintCounter--;
+        }
+      }
+      else if (_gameField[row][col] == _controlValue)
+        _gameField[row][col] = -1;
+      else
+        _gameField[row][col] = _controlValue;
+    }
+
   }
 
   setGameFieldSolved(List<List<int>> gameField){
@@ -60,26 +75,8 @@ class abstractSudoku {
     this._gameField = gameField;
   }
 
-  List<List<bool>> getUserInput() {
-    return this._userInput;
-  }
-
   setUserInput(List<List<bool>> userInput){
     this._userInput = userInput;
-  }
-
-  int getControlValue() {
-    return this._controlValue;
-  }
-
-  setControlValue(String value) {
-    if(value == "show"){
-      _controlValue = -2;
-      return;
-    }
-
-    int controlValue = int.parse(value);
-    this._controlValue = controlValue;
   }
 
   List<List<Colors>> getColors() {
@@ -98,53 +95,67 @@ class abstractSudoku {
     this._sides= sides;
   }
 
-  int getHelpCounter() {
-    return this._helpCounter;
+  int getControlValue() {
+    return this._controlValue;
   }
 
-  setGameCell(int row, int col) {
-    if(_userInput[row][col]) {
-      if(_controlValue == -2) {
-        if(_helpCounter > 0) {
-          _gameField[row][col] = _gameFieldSolved[row][col];
-          _helpCounter--;
-        }
-      }
-      else if (_gameField[row][col] == _controlValue)
-        _gameField[row][col] = -1;
-      else
-        _gameField[row][col] = _controlValue;
+  setControlValue(String value) {
+    if(value == "hint"){
+      _controlValue = -2;
+      return;
     }
 
+    int controlValue = int.parse(value);
+    this._controlValue = controlValue;
   }
+
+  int getHintCounter() {
+    return this._hintCounter;
+  }
+
+
 
 }
 
+
+class Sides{
+  BorderType left,bottom,right,top;
+
+  int row,col;
+
+  toString() =>"left: $left, bottom:$bottom, right:$right, top:$top ($row,$col)";
+}
+
+
+/**
+ * A [SudokuGameGenerator] has a list of json level files
+ * A [SudokuGameGenerator] has a Random for generating random-numbers
+ * A [SudokuGameGenerator] has different position lists, used for generating sudokus
+ */
 class SudokuGameGenerator {
 
-  // Json paths & levelFiles
-  List<String> jsonPaths;
-  List<String> jsonLevelFiles;
+  // Json levelFiles
+  List<String> _jsonLevelFiles;
 
   Random _random = new Random.secure();
 
   // List of middlepoint positions
-  List<Point<int>> middlepoints;
-  List<List<Point<int>>> diagonalPoints;
-  List<List<Point<int>>> hyperPoints;
-  List<List<Point<int>>> colorPoints;
+  List<Point<int>> _middlepoints;
+  List<List<Point<int>>> _diagonalPoints;
+  List<List<Point<int>>> _hyperPoints;
+  List<List<Point<int>>> _colorPoints;
 
   SudokuGameGenerator() {
     // initialize middlepoint positions
-    middlepoints = new List<Point<int>>();
+    _middlepoints = new List<Point<int>>();
     for (int i = 1; i <= 7; i = i + 3) {
       for (int j = 1; j <= 7; j = j + 3) {
-        middlepoints.add(new Point(i, j));
+        _middlepoints.add(new Point(i, j));
       }
     }
 
     // initialize diagonal positions
-    diagonalPoints = new List<List<Point<int>>>();
+    _diagonalPoints = new List<List<Point<int>>>();
     List<Point<int>> firstDiagonal = new List<Point<int>>();
     List<Point<int>> secondDiagonal = new List<Point<int>>();
     for (int i = 0; i < 9; i++) {
@@ -156,11 +167,11 @@ class SudokuGameGenerator {
       Point<int> secondPoint = new Point(i, 8 - i);
       secondDiagonal.add(secondPoint);
     }
-    diagonalPoints.add(firstDiagonal);
-    diagonalPoints.add(secondDiagonal);
+    _diagonalPoints.add(firstDiagonal);
+    _diagonalPoints.add(secondDiagonal);
 
     // initialize hyper positions
-    hyperPoints = new List<List<Point<int>>>();
+    _hyperPoints = new List<List<Point<int>>>();
 
     List<Point<int>> hyperSquare1 = new List<Point<int>>();
     List<Point<int>> hyperSquare2 = new List<Point<int>>();
@@ -175,13 +186,13 @@ class SudokuGameGenerator {
         hyperSquare4.add(new Point(i + 4, j + 4));
       }
     }
-    hyperPoints.add(hyperSquare1);
-    hyperPoints.add(hyperSquare2);
-    hyperPoints.add(hyperSquare3);
-    hyperPoints.add(hyperSquare4);
+    _hyperPoints.add(hyperSquare1);
+    _hyperPoints.add(hyperSquare2);
+    _hyperPoints.add(hyperSquare3);
+    _hyperPoints.add(hyperSquare4);
 
     // initialize color positions
-    colorPoints = new List<List<Point<int>>>();
+    _colorPoints = new List<List<Point<int>>>();
     List<Point<int>> Color1 = new List<Point<int>>();
     List<Point<int>> Color2 = new List<Point<int>>();
     List<Point<int>> Color3 = new List<Point<int>>();
@@ -205,19 +216,19 @@ class SudokuGameGenerator {
         Color9.add(new Point(i + 2, j + 2));
       }
     }
-    colorPoints.add(Color1);
-    colorPoints.add(Color2);
-    colorPoints.add(Color3);
-    colorPoints.add(Color4);
-    colorPoints.add(Color5);
-    colorPoints.add(Color6);
-    colorPoints.add(Color7);
-    colorPoints.add(Color8);
-    colorPoints.add(Color9);
+    _colorPoints.add(Color1);
+    _colorPoints.add(Color2);
+    _colorPoints.add(Color3);
+    _colorPoints.add(Color4);
+    _colorPoints.add(Color5);
+    _colorPoints.add(Color6);
+    _colorPoints.add(Color7);
+    _colorPoints.add(Color8);
+    _colorPoints.add(Color9);
 
 
     // Load jsonFiles for nonomino sudokus
-    jsonLevelFiles = new List<String>();
+    _jsonLevelFiles = new List<String>();
 
     String folder = "nonomino";
     for (int i = 1; i < 4; i++) {
@@ -233,7 +244,7 @@ class SudokuGameGenerator {
   }
 
   void addLevelToList(String content, String path) {
-    jsonLevelFiles.add(content);
+    _jsonLevelFiles.add(content);
   }
 
   List<List<int>> copyList(List<List<int>> copyList) {
@@ -280,7 +291,7 @@ class SudokuGameGenerator {
   }
 
 
-  abstractSudoku newGame(GameTypes gameType) {
+  Sudoku newGame(GameTypes gameType) {
 
     return (gameType == GameTypes.NONOMINO_SUDOKU ?
     newNonominoSudoku() :
@@ -288,11 +299,11 @@ class SudokuGameGenerator {
 
   }
 
-  abstractSudoku newNonominoSudoku() {
+  Sudoku newNonominoSudoku() {
     int random = _random.nextInt(3);
-    Map level = JSON.decode(jsonLevelFiles[random]);
+    Map level = JSON.decode(_jsonLevelFiles[random]);
 
-    abstractSudoku sudoku = new abstractSudoku();
+    Sudoku sudoku = new Sudoku();
 
     List<List<int>> gameFieldSolved = level["fields"];
     List<List<bool>> userInput = createUserInputValues(level["empty"], 1);
@@ -585,7 +596,7 @@ class SudokuGameGenerator {
   void removeNumberFromDiagonals(int x, int y, int number,
       List<List<List<int>>> sets) {
     Point<int> positionPoint = new Point(x, y);
-    for (List<Point<int>> diagonal in diagonalPoints) {
+    for (List<Point<int>> diagonal in _diagonalPoints) {
       if (diagonal.contains(positionPoint)) {
         for (Point<int> point in diagonal) {
           int cellIndex = sets[point.x][point.y].indexOf(number);
@@ -599,7 +610,7 @@ class SudokuGameGenerator {
   void removeNumberFromHyperSquares(int x, int y, int number,
       List<List<List<int>>> sets) {
     Point<int> positionPoint = new Point(x, y);
-    for (List<Point<int>> hyper in hyperPoints) {
+    for (List<Point<int>> hyper in _hyperPoints) {
       if (hyper.contains(positionPoint)) {
         for (Point<int> point in hyper) {
           int cellIndex = sets[point.x][point.y].indexOf(number);
@@ -613,8 +624,8 @@ class SudokuGameGenerator {
   void removeNumberFromMiddlepoints(int x, int y, int number,
       List<List<List<int>>> sets) {
     Point<int> positionPoint = new Point(x, y);
-    if (middlepoints.contains(positionPoint)) {
-      for (Point<int> point in middlepoints) {
+    if (_middlepoints.contains(positionPoint)) {
+      for (Point<int> point in _middlepoints) {
         int cellIndex = sets[point.x][point.y].indexOf(number);
         if (cellIndex >= 0)
           sets[point.x][point.y].removeAt(cellIndex);
@@ -625,7 +636,7 @@ class SudokuGameGenerator {
   void removeNumberFromColors(int x, int y, int number,
       List<List<List<int>>> sets) {
     Point<int> positionPoint = new Point(x, y);
-    for (List<Point<int>> color in colorPoints) {
+    for (List<Point<int>> color in _colorPoints) {
       if (color.contains(positionPoint)) {
         for (Point<int> point in color) {
           int cellIndex = sets[point.x][point.y].indexOf(number);
@@ -637,8 +648,8 @@ class SudokuGameGenerator {
   }
 
 
-  abstractSudoku newSudoku(GameTypes gameType) {
-    abstractSudoku sudoku = new abstractSudoku();
+  Sudoku newSudoku(GameTypes gameType) {
+    Sudoku sudoku = new Sudoku();
 
     // Create new solved sudoku
     List<List<int>> gameFieldSolved = generateGame(gameType);
