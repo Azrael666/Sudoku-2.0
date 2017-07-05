@@ -1,4 +1,4 @@
-// Copyright (c) 2017, Dirk Teschner. All rights reserved. Use of this source code
+// Copyright (c) 2017, Kevin Joe Reif & Dirk Teschner. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 part of sudokulib;
@@ -18,7 +18,6 @@ class SudokuView {
   DivElement _overlay = document.getElementById("overlay");
   DivElement _container = document.getElementById("container");
 
-  DivElement _title = document.getElementById("title");
   DivElement _clock = document.getElementById("clock");
 
   TableElement _gameField = document.getElementById("sudokuGameField");
@@ -26,13 +25,11 @@ class SudokuView {
 
 
   SudokuView() {
-    print("View Constructor");
     createGameTable();
     createControlTable();
   }
 
   void createGameTable() {
-    print("Create Game Table");
     TableElement table =  new TableElement();
     table.id = "game_table";
 
@@ -49,11 +46,9 @@ class SudokuView {
       }
     }
     int tableSize = getTableSize();
-    print("Game Table Size: " + tableSize.toString());
     _gameField.style.width = tableSize.toString() + "px";
     _gameField.style.height = tableSize.toString() + "px";
 
-    print("Built Game Table");
   }
 
   int getTableSize() {
@@ -69,14 +64,6 @@ class SudokuView {
 
 
   void createControlTable() {
-    print("Create Control Table");
-
-
-    // warum ist das hier?
-    TableElement table =  new TableElement();
-    table.id = "control_table";
-
-
 
     int count = 1;
     for(int i = 0; i < _controlTableRows; i++) {
@@ -87,11 +74,6 @@ class SudokuView {
         tableCell.classes.add("ControlCell");
         tableCell.text = count.toString();
 
-
-
-
-
-
         if(i == 0 && j == 0)
           tableCell.classes.add("selectedControl");
         count++;
@@ -100,21 +82,16 @@ class SudokuView {
 
     TableRowElement row = _controlField.addRow();
     TableCellElement cell = row.addCell();
-    cell.id = "show";
-    //cell.classes.add("ControllCell");
-    cell.text = "show";
+    cell.id = "Control_Show";
+    cell.classes.add("ControlCell");
+    cell.text = "show (  )";
     cell.colSpan= 3;
 
 
-
-
-
     int tableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
-    print("Control Table Size: " + tableSize.toString());
     _controlField.style.width = tableSize.toString() + "px";
     _controlField.style.height = tableSize.toString() + "px";
 
-    print("Built Control Table");
   }
 
   // Update DOM Tree
@@ -131,6 +108,10 @@ class SudokuView {
           cell.text = gameField[i][j].toString();
       }
     }
+
+    // Update show value
+    TableCellElement controlShow = document.getElementById("Control_Show");
+    controlShow.text = "show ( " + _model.getHelpCounter().toString() + " )";
   }
   
   void setControl() {
@@ -181,9 +162,6 @@ class SudokuView {
         cell.dataset.putIfAbsent("row", ()=>"$cellRow");
         cell.dataset.putIfAbsent("sides", ()=>"$s");
 
-
-
-
         cell.style.borderLeft = (s.left==BorderType.THIN)?"inset":"solid";
         cell.style.borderBottom = (s.bottom==BorderType.THIN)?"inset":"solid";
         cell.style.borderRight = (s.right==BorderType.THIN)?"inset":"solid";
@@ -192,43 +170,8 @@ class SudokuView {
       }
 
 
-
-
-
     }
 
-/*
-    for(int i=0;i<9;i++){
-      for(int i1=0;i1<9;i1++){
-        TableCellElement tableCell;
-        if(i*9+i1<gameCells.length)
-          tableCell = gameCells[i*9+i1];
-        else
-          print("index out of bounds, length:${gameCells.length}");
-
-
-        Sides s;
-        if(_model!=null)
-          if(_model.getSides()!=null)
-            s=_model.getSides()[i][i1];
-          else
-            print("sides was null");
-        else
-          print("model was null");
-
-
-        if( tableCell!=null && s != null){
-
-
-          tableCell.style.borderLeft = (s.left==BorderType.THIN)?"solid":"double";
-          tableCell.style.borderBottom = (s.bottom==BorderType.THIN)?"solid":"double";
-          tableCell.style.borderRight = (s.right==BorderType.THIN)?"solid":"double";
-          tableCell.style.borderTop = (s.top==BorderType.THIN)?"solid":"double";
-
-        }
-
-      }
-    }*/
   }
 
 
@@ -289,7 +232,7 @@ class SudokuView {
   }
 
 
-  void showHelp(bool help) {
+  void showHint(bool help) {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
     for(TableCellElement cell in gameCells) {
       String cellID = cell.id.substring(5);
@@ -316,9 +259,7 @@ class SudokuView {
     var orientationLandscape = window.matchMedia("(orientation: landscape)");
 
     if(isMobile.matches) {
-      print("Mobile");
       if(orientationLandscape.matches) {
-        print("Landscape");
         _warningOverlay.innerHtml =
         "<h1>"
             "Please rotate device!"
@@ -328,18 +269,14 @@ class SudokuView {
 
         _container.style.display = "none";
 
-
       }
       else {
-        print("Portrait");
         _warningOverlay.innerHtml = "";
         _container.style.display = "initial";
-
 
       }
     }
     else {
-      print("Desktop");
 
       _warningOverlay.innerHtml = "";
       _container.style.display = "initial";
@@ -348,12 +285,10 @@ class SudokuView {
 
     // Adjust gameTable & controlTable sizes
     int gameTableSize = getTableSize();
-    print("Game Table Size: " + gameTableSize.toString());
     _gameField.style.width = gameTableSize.toString() + "px";
     _gameField.style.height = gameTableSize.toString() + "px";
 
     int controlTableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
-    print("Control Table Size: " + controlTableSize.toString());
     _controlField.style.width = controlTableSize.toString() + "px";
     _controlField.style.height = controlTableSize.toString() + "px";
   }

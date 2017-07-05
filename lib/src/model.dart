@@ -1,4 +1,4 @@
-// Copyright (c) 2017, Dirk Teschner. All rights reserved. Use of this source code
+// Copyright (c) 2017, Kevin Joe Reif & Dirk Teschner. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 part of sudokulib;
@@ -21,15 +21,15 @@ class abstractSudoku {
   List<List<int>> _gameFieldSolved;
   List<List<int>> _gameField;
   List<List<bool>> _userInput;
-  List<List<Point<int>>> _regions;
   List<List<Colors>> _colors;
   List<List<Sides>> _sides;
 
   int _controlValue;
+  int _helpCounter;
 
   abstractSudoku() {
     _controlValue = 1;
-
+    _helpCounter = 5;
   }
 
   // Checks if the player has solved the sudoku correct
@@ -37,12 +37,10 @@ class abstractSudoku {
     for(int i = 0; i < _gameFieldSolved.length; i++) {
       for(int j = 0; j < _gameFieldSolved[0].length; j++) {
         if(_gameFieldSolved[i][j] != _gameField[i][j]) {
-          print("Solved: false");
           return false;
         }
       }
     }
-    print("Solved: true");
     return true;
   }
 
@@ -74,7 +72,7 @@ class abstractSudoku {
     return this._controlValue;
   }
 
-  void setControlValue(String value) {
+  setControlValue(String value) {
     if(value == "show"){
       _controlValue = -2;
       return;
@@ -82,15 +80,6 @@ class abstractSudoku {
 
     int controlValue = int.parse(value);
     this._controlValue = controlValue;
-    print("Control Value: " + controlValue.toString());
-  }
-
-  List<List<Point<int>>> getRegions() {
-    return this._regions;
-  }
-
-  setRegions(List<List<Point<int>>> value) {
-    this._regions = value;
   }
 
   List<List<Colors>> getColors() {
@@ -104,25 +93,29 @@ class abstractSudoku {
   List<List<Sides>> getSides() {
     return this._sides;
   }
+
   setSides(List<List<Sides>> sides){
     this._sides= sides;
   }
 
+  int getHelpCounter() {
+    return this._helpCounter;
+  }
 
-  void setGameCell(int row, int col) {
-    print("Set GameCell " + row.toString() + " - " + col.toString());
-    print("GameCell before: " + _gameField[row][col].toString());
-    print("UserInput: " + _userInput[row][col].toString());
+  setGameCell(int row, int col) {
     if(_userInput[row][col]) {
-      if (_gameField[row][col] == _controlValue)
+      if(_controlValue == -2) {
+        if(_helpCounter > 0) {
+          _gameField[row][col] = _gameFieldSolved[row][col];
+          _helpCounter--;
+        }
+      }
+      else if (_gameField[row][col] == _controlValue)
         _gameField[row][col] = -1;
-      else if(_controlValue == -2)
-        _gameField[row][col] = _gameFieldSolved[row][col];
       else
         _gameField[row][col] = _controlValue;
     }
 
-    print("GameCell after: " + _gameField[row][col].toString());
   }
 
 }
@@ -241,7 +234,6 @@ class SudokuGameGenerator {
 
   void addLevelToList(String content, String path) {
     jsonLevelFiles.add(content);
-    print("Loaded File: " + path);
   }
 
   List<List<int>> copyList(List<List<int>> copyList) {
@@ -258,12 +250,11 @@ class SudokuGameGenerator {
     return ret;
   }
 
+  // Randomly removes numbers from sudoku
   List<List<int>> createUserSudoku(List<List<int>> sudoku) {
     var userSudoku = copyList(sudoku);
 
-    // TODO remove fields from gameField
-    // Currently just dummy implementation
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 20; i++) {
       int row = _random.nextInt(9);
       int col = _random.nextInt(9);
       userSudoku[row][col] = -1;
@@ -290,19 +281,10 @@ class SudokuGameGenerator {
 
 
   abstractSudoku newGame(GameTypes gameType) {
-    print(gameType);
 
     return (gameType == GameTypes.NONOMINO_SUDOKU ?
     newNonominoSudoku() :
     newSudoku(gameType));
-
-    /*
-    if(gameType == GameTypes.NONOMINO_SUDOKU) {
-      return newNonominoSudoku();
-    } else {
-      return newSudoku(gameType);
-    }
-    */
 
   }
 
@@ -317,26 +299,6 @@ class SudokuGameGenerator {
     List<List<int>> gameField = getGameFieldFromFile(
         gameFieldSolved, userInput);
     ;
-
-    /*
-
-    // Create Regions List;
-    // TODO Regions necessary?
-    // TODO add color regions
-    List<List<Point<int>>> totalList = new List<List<Point<int>>>();
-    List<List<Point<int>>> rowList = getRowRegions();
-    List<List<Point<int>>> colList = getColRegions();
-
-    for (List<Point<int>> list in rowList) {
-      totalList.add(list);
-    }
-
-    for (List<Point<int>> list in colList) {
-      totalList.add(list);
-    }
-
-    */
-
 
     // Set colors
     List<List<int>> colorsFile = level["colors"];
@@ -412,19 +374,7 @@ class SudokuGameGenerator {
     sudoku.setGameFieldSolved(gameFieldSolved);
     sudoku.setGameField(gameField);
     sudoku.setUserInput(userInput);
-    //sudoku.setRegions(totalList);
     sudoku.setColors(colors);
-
-
-    /*
-
-    print("Difficulty: " + level["difficulty"]);
-    print("GamefieldSolved:");
-    printSudoku(gameFieldSolved);
-    print("Gamefield:");
-    printSudoku(gameField);
-    print("UserInput: " + userInput.toString());
-    */
 
     return sudoku;
   }
@@ -461,31 +411,20 @@ class SudokuGameGenerator {
       sets.add(row);
     }
 
-    //final cancelTimerSpeed = const Duration(milliseconds: 5000);
-    //Timer test = new Timer(cancelTimerSpeed, callback);
 
     Stopwatch timeStopwath = new Stopwatch();
     timeStopwath.start();
-    // Generate sudoku
-    //counter = 0;
 
     bool found = false;
-    int count = 1;
     do {
-      print("Count: " + count.toString());
       Stopwatch cancelTimer = new Stopwatch();
       cancelTimer.start();
       found = createGame(sudoku, sets, gameType, cancelTimer);
-      count++;
     } while (!found && timeStopwath.elapsedMilliseconds < 10000);
 
     if (found) {
-      printSudoku(sudoku);
-      print("Found Sudoku");
-      print("Needed time: " + timeStopwath.elapsedMilliseconds.toString());
       return sudoku;
     } else {
-      print("Found no Sudoku");
       return null;
     }
   }
@@ -526,7 +465,6 @@ class SudokuGameGenerator {
 
           // fill number in current position field of sudoku
           sudoku[positionX][positionY] = nextNumber;
-          //printSudoku(sudoku);
 
           // remove chosen number from all sets of position's row, column & 3x3 area
 
@@ -545,31 +483,11 @@ class SudokuGameGenerator {
       } else
         return false;
     } else {
-      print("Sudoku finished");
       return true;
     }
   }
 
   Point<int> findNextPosition(List<List<int>> sudoku) {
-
-    /*
-    // random
-    List<Point<int>> emptyCells = new List<Point<int>>();
-    for(int i = 0; i < sudoku.length; i++) {
-      for(int j = 0; j < sudoku[0].length; j++) {
-        if(sudoku[i][j] == -1)
-          emptyCells.add(new Point(i, j));
-      }
-    }
-
-    if(emptyCells.length == 0)
-      return null;
-    else {
-      int index =_random.nextInt(emptyCells.length);
-      return emptyCells[index];
-    }
-
-    */
 
     // top left to bottom right
     for (int i = 0; i < 9; i++) {
@@ -736,31 +654,6 @@ class SudokuGameGenerator {
     sudoku.setUserInput(userInput);
 
 
-    // TODO Regions necessary?
-    /*
-    // Create Regions List;
-    List<List<Point<int>>> totalList = new List<List<Point<int>>>();
-    List<List<Point<int>>> rowList = getRowRegions();
-    List<List<Point<int>>> colList = getColRegions();
-    List<List<Point<int>>> areaList = getAreaRegions();
-
-    for(List<Point<int>> list in rowList) {
-      totalList.add(list);
-    }
-
-    for(List<Point<int>> list in colList) {
-      totalList.add(list);
-    }
-
-    for(List<Point<int>> list in areaList) {
-      totalList.add(list);
-    }
-
-    _sudoku.setRegions(totalList);
-
-  */
-
-
     // Create Colors
     List<List<Colors>> colors = new List<List<Colors>>(gameFieldSolved.length);
 
@@ -822,7 +715,6 @@ class SudokuGameGenerator {
             }
           }
 
-
         }
       }
     }
@@ -865,79 +757,4 @@ class SudokuGameGenerator {
     return gameField;
   }
 
-
-  // Region stuff - maybe unnecessary
-  /*
-
-  // Creates list of row coordinates (Point<int>)
-  List<List<Point<int>>> getRowRegions() {
-    List<List<Point<int>>> list = new List<List<Point<int>>>();
-    for (int i = 0; i < 9; i++) {
-      List<Point<int>> singleRow = new List<Point<int>>();
-      for (int j = 0; j < 9; j++) {
-        Point<int> cell = new Point(i, j);
-        singleRow.add(cell);
-      }
-      list.add(singleRow);
-    }
-    return list;
-  }
-
-  // Creates list of col coordinates (Point<int>)
-  List<List<Point<int>>> getColRegions() {
-    List<List<Point<int>>> list = new List<List<Point<int>>>();
-    for (int i = 0; i < 9; i++) {
-      List<Point<int>> singleRow = new List<Point<int>>();
-      for (int j = 0; j < 9; j++) {
-        Point<int> cell = new Point(j, i);
-        singleRow.add(cell);
-      }
-      list.add(singleRow);
-    }
-    return list;
-  }
-
-  // Creates list of 3x3 area coordinates (Point<int>)
-  List<List<Point<int>>> getAreaRegions() {
-    List<List<Point<int>>> list = new List<List<Point<int>>>();
-
-    for (int i = 0; i < 9; i += 3) {
-      for (int j = 0; j < 9; j += 3) {
-        list.add(getSpecificArea(i, i + 3, j, j + 3));
-      }
-    }
-
-    return list;
-  }
-
-
-  // returns specific 3x3 area of the sudoku
-  List<Point<int>> getSpecificArea(int rowStart, int rowEnd, int colStart,
-      int colEnd) {
-    List<Point<int>> area = new List<Point<int>>();
-
-    for (int i = rowStart; i < rowEnd; i++) {
-      for (int j = colStart; j < colEnd; j++) {
-        area.add(new Point(i, j));
-      }
-    }
-    return area;
-  }
-
-  */
-
-
-  void printSudoku(List<List<int>> sudoku) {
-    for (List<int> i in sudoku) {
-      print(i);
-    }
-    print("");
-  }
-
-
-  // TODO implementation
-  // returns amount of possible solutions for given sudoku
-  int getSudokuSolutions(List<List<int>> sudoku) {
-    return 1;
-  }
 }

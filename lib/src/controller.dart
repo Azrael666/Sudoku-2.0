@@ -1,16 +1,14 @@
-// Copyright (c) 2017, Dirk Teschner. All rights reserved. Use of this source code
+// Copyright (c) 2017, Kevin Joe Reif & Dirk Teschner. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 part of sudokulib;
-
-
 
 class SudokuController {
 
   final _overlay = document.getElementById("overlay");
   final _newGameButton = document.getElementById("newGameButton");
   final _helpButton = document.getElementById("helpButton");
-  bool _help = false;
+  bool _hint = false;
 
   final clockTriggerSpeed = const Duration(milliseconds: 1000);
   Timer clockTrigger;
@@ -26,17 +24,15 @@ class SudokuController {
     _view = new SudokuView();
 
     addControlStuff();
-    print(window.navigator.userAgent);
   }
 
   addControlStuff() {
-    print("Add Control Stuff");
 
     clockTrigger = new Timer.periodic(clockTriggerSpeed, (_) => clock());
     stopwatch = new Stopwatch();
 
     _newGameButton.addEventListener('click', newGameButton);
-    _helpButton.addEventListener('click', helpFunc);
+    _helpButton.addEventListener('click', hintFunc);
 
     window.addEventListener('resize', windowResize);
 
@@ -53,7 +49,7 @@ class SudokuController {
               (event) => controlCell(cell));
     }
 
-    TableCellElement cell = document.querySelector("#show");
+    TableCellElement cell = document.querySelector("#Control_Show");
     cell.addEventListener('click',
             (event) => showCell(cell));
   }
@@ -115,30 +111,22 @@ class SudokuController {
   }
 
   void newGame(GameTypes gameType) {
-    print(gameType);
     _sudoku = _model.newGame(gameType);
-    print(_sudoku);
-    /*
-    print(test.getGameFieldSolved());
-    print(test.getGameField());
-    print(test.getUserInput());
-    */
 
     _view.setModel(_sudoku);
     _view.initialUpdate();
     _view.update();
-    _view.showHelp(_help);
+    _view.showHint(_hint);
     _view.setControl();
     stopwatch.reset();
     stopwatch.start();
     _view.updateClock(stopwatch.elapsed);
   }
 
-  void helpFunc(e) {
-    print("asdf");
+  void hintFunc(e) {
     if(_sudoku != null) {
-      _help = !_help;
-      _view.showHelp(_help);
+      _hint = !_hint;
+      _view.showHint(_hint);
     }
   }
 
@@ -150,7 +138,7 @@ class SudokuController {
       _sudoku.setGameCell(cellRow, cellCol);
 
       _view.update();
-      _view.showHelp(_help);
+      _view.showHint(_hint);
 
       updateWin();
 
@@ -174,15 +162,17 @@ class SudokuController {
     if(_sudoku != null) {
       _sudoku.setControlValue("show");
       _view.updateControl(cell);
-      //_view.showHelp(_help);
+      _view.showHint(_hint);
     }
   }
 
   void controlCell(TableCellElement cell) {
     if(_sudoku != null) {
-      _sudoku.setControlValue(cell.text);
-      _view.updateControl(cell);
-      _view.showHelp(_help);
+      if(!cell.text.contains("show")) {
+        _sudoku.setControlValue(cell.text);
+        _view.updateControl(cell);
+        _view.showHint(_hint);
+      }
     }
   }
 }
