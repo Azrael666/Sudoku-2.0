@@ -128,11 +128,11 @@ class Sides{
 
 
 /**
- * A [SudokuGameGenerator] has a list of json level files
- * A [SudokuGameGenerator] has a Random for generating random-numbers
- * A [SudokuGameGenerator] has different position lists, used for generating sudokus
+ * A [SudokuGenerator] has a list of json level files
+ * A [SudokuGenerator] has a Random for generating random-numbers
+ * A [SudokuGenerator] has different position lists, used for generating sudokus
  */
-class SudokuGameGenerator {
+class SudokuGenerator {
 
   // Json levelFiles
   List<String> _jsonLevelFiles;
@@ -145,7 +145,7 @@ class SudokuGameGenerator {
   List<List<Point<int>>> _hyperPoints;
   List<List<Point<int>>> _colorPoints;
 
-  SudokuGameGenerator() {
+  SudokuGenerator() {
     // initialize middlepoint positions
     _middlepoints = new List<Point<int>>();
     for (int i = 1; i <= 7; i = i + 3) {

@@ -1,7 +1,7 @@
 name: Sudoku
 description: Single page web app that implements a single player game like sudoku.
 version: 1.0.0
-#author: Dirk Teschner <di_teschner@yahoo.de>
+author: Kevin Joe Reif, Dirk Teschner
 
 environment:
   sdk: '>=1.20.1 <2.0.0'

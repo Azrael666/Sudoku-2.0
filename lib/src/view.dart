@@ -5,38 +5,102 @@ part of sudokulib;
 
 /**
  * A [SudokuView] reflects the state of the current [Sudoku]
- * to the user by interacting with the DOM tree
+ * to the user by interacting with the DOM tree.
  */
 class SudokuView {
+
+  /**
+   * Reference to the current [Sudoku].
+   */
   Sudoku _model;
 
+  /**
+   * Number of game table rows.
+   */
   static int _gameTableRows = 9;
+
+  /**
+   * Number of game table columns.
+   */
   static int _gameTableCols = 9;
+
+  /**
+   * Width percentage that the game table should have.
+   */
   static double _gameTableWidthPercent = 90.0;
+
+  /**
+   * Height percentage that the game table should have.
+   */
   static double _gameTableHeightPercent = 60.0;
+
+  /**
+   * Number of control table rows.
+   */
   static int _controlTableRows = 3;
+
+  /**
+   * Number of control table columns.
+   */
   static int _controlTableCols = 3;
+
+  /**
+   * Height percentage that the control table should have.
+   */
   static double _controlTableHeightPercent = 25.0;
 
+  /**
+   * Element with id 'warningOverlay' of the DOM tree.
+   * Used to display warning overlays.
+   * (e.g. device rotation message)
+   */
   DivElement _warningOverlay = document.getElementById("warningOverlay");
+
+  /**
+   * Element with id 'overlay' of the DOM tree.
+   * Used to display overlay forms.
+   * (e.g. Win overlay or game type selection)
+   */
   DivElement _overlay = document.getElementById("overlay");
+
+  /**
+   * Element with id 'container' of the DOM tree.
+   * Used for resizing.
+   */
   DivElement _container = document.getElementById("container");
 
+  /**
+   * Element with id 'clock' of the DOM tree.
+   * Used for showing the elapsed playing time.
+   */
   DivElement _clock = document.getElementById("clock");
 
+  /**
+   * Element with id 'sudokuGameField' of the DOM tree.
+   * Used for displaying & updating the state of the [Sudoku] game.
+   */
   TableElement _gameField = document.getElementById("sudokuGameField");
+
+  /**
+   * Element with id 'sudokuControlField' of the DOM tree.
+   * Used for displaying & updating the control elements.
+   */
   TableElement _controlField = document.getElementById("sudokuControlField");
 
-
+  /**
+   * Constructor to create a [SudokuView] object.
+   */
   SudokuView() {
     createGameTable();
     createControlTable();
   }
 
+  /**
+   * Initially creates a html table which represents the fields of an [Sudoku].
+   */
   void createGameTable() {
-    TableElement table =  new TableElement();
-    table.id = "game_table";
 
+    // Generating table
     for(int i = 0; i < _gameTableRows; i++) {
       TableRowElement tempRow = _gameField.addRow();
       for(int j = 0; j < _gameTableCols; j++) {
@@ -46,12 +110,17 @@ class SudokuView {
 
       }
     }
+
+    // Set width & height
     int tableSize = getTableSize();
     _gameField.style.width = tableSize.toString() + "px";
     _gameField.style.height = tableSize.toString() + "px";
 
   }
 
+  /**
+   * Calculates table size for quadratic table
+   */
   int getTableSize() {
     int tableWidth = window.innerWidth * _gameTableWidthPercent ~/ 100;
     int tableHeight = window.innerHeight * _gameTableHeightPercent ~/ 100;
@@ -62,9 +131,12 @@ class SudokuView {
     return tableHeight;
   }
 
-
+  /**
+   * Initially creates a html table which represents the control elements.
+   */
   void createControlTable() {
 
+    // Generating table
     int count = 1;
     for(int i = 0; i < _controlTableRows; i++) {
       TableRowElement tempRow = _controlField.addRow();
@@ -80,6 +152,7 @@ class SudokuView {
       }
     }
 
+    // Add hint button
     TableRowElement row = _controlField.addRow();
     TableCellElement cell = row.addCell();
     cell.id = "Control_Hint";
@@ -87,14 +160,16 @@ class SudokuView {
     cell.text = "hint (  )";
     cell.colSpan= 3;
 
-
+    // Set width & height
     int tableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
     _controlField.style.width = tableSize.toString() + "px";
     _controlField.style.height = tableSize.toString() + "px";
 
   }
 
-  // Update DOM Tree
+  /**
+   * Updates game field according to [Sudoku] state.
+   */
   void update() {
     List<List<int>> gameField = _model.getGameField();
 
@@ -113,7 +188,10 @@ class SudokuView {
     TableCellElement controlHint = document.getElementById("Control_Hint");
     controlHint.text = "hint ( " + _model.getHintCounter().toString() + " )";
   }
-  
+
+  /**
+   * Initially highlights control element at the start of a new game.
+   */
   void setControl() {
     List<TableCellElement> controlCells = document.querySelectorAll(".ControlCell");
     for(TableCellElement cell in controlCells) {
@@ -123,6 +201,9 @@ class SudokuView {
     }
   }
 
+  /**
+   * Updates highlighting of control elements.
+   */
   void updateControl(TableCellElement actualCell) {
     List<TableCellElement> controlCells = document.querySelectorAll(".ControlCell");
     for(TableCellElement cell in controlCells) {
@@ -134,6 +215,9 @@ class SudokuView {
     actualCell.classes.add("selectedControl");
   }
 
+  /**
+   * Initializes the view at the start of a new [Sudoku] game.
+   */
   void initialUpdate() {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
 
@@ -141,20 +225,24 @@ class SudokuView {
     List<List<Colors>> colors = _model.getColors();
     List<List<Sides>> sides = _model.getSides();
 
+    // Set initially fixed fields and colors of fields
     for(TableCellElement cell in gameCells) {
       cell.classes.clear();
       cell.classes.add("GameCell");
       cell.classes.add("COLOR_STANDARD");
+
       String cellID = cell.id.substring(5);
       int cellRow = int.parse(cellID.substring(0, 1));
       int cellCol = int.parse(cellID.substring(2));
+
       if(gameField[cellRow][cellCol] != -1)
-      cell.classes.add("fixedGameField");
+        cell.classes.add("fixedGameField");
+
       String color = colors[cellRow][cellCol].toString();
       color = color.substring(7);
       cell.classes.add(color);
 
-
+      // Set game field cell borders
       if(sides != null){
         Sides s = sides[cellRow][cellCol];
 
@@ -169,12 +257,13 @@ class SudokuView {
 
       }
 
-
     }
 
   }
 
-
+  /**
+   * Updates the play time clock.
+   */
   void updateClock(Duration clockCount) {
     int hours = clockCount.inHours % 24;
     int minutes = clockCount.inMinutes % 60;
@@ -182,6 +271,10 @@ class SudokuView {
     _clock.text = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString();
   }
 
+  /**
+   * Shows the overlay with images of
+   * available game types to start a new game.
+   */
   void updateNewGame() {
     _overlay.innerHtml =
     "<div id='newGame'>"
@@ -215,6 +308,9 @@ class SudokuView {
     ;
   }
 
+  /**
+   * Shows win overlay when the player has solved a [Sudoku] correct.
+   */
   void updateWin(Duration time) {
     int hours = time.inHours % 24;
     int minutes = time.inMinutes % 60;
@@ -231,7 +327,10 @@ class SudokuView {
     "</div>";
   }
 
-
+  /**
+   * Shows or hides help functionality according to [help].
+   * Highlights all numbers that match the currently selected control value.
+   */
   void showHelp(bool help) {
     List<TableCellElement> gameCells = document.querySelectorAll(".GameCell");
     for(TableCellElement cell in gameCells) {
@@ -249,12 +348,20 @@ class SudokuView {
     }
   }
 
+  /**
+   * Resizes the container element, that contains all game elements
+   * according to current window size.
+   * If device is in landscape orientation, is the only screen
+   * and has maximum of 760px screen-width, an warning overlay
+   * is shown that tells the player to rotate the device.
+   */
   void resize() {
 
+    // Update of container size
     _container.style.height = "100%";
     _container.style.width = "100%";
 
-    // Device Orientation
+    // Device orientation overlay
     var isMobile = window.matchMedia("only screen and (max-width: 760px)");
     var orientationLandscape = window.matchMedia("(orientation: landscape)");
 
@@ -283,16 +390,20 @@ class SudokuView {
 
     }
 
-    // Adjust gameTable & controlTable sizes
+    // Adjust game table size
     int gameTableSize = getTableSize();
     _gameField.style.width = gameTableSize.toString() + "px";
     _gameField.style.height = gameTableSize.toString() + "px";
 
+    // Adjust control table size
     int controlTableSize = window.innerHeight * _controlTableHeightPercent ~/ 100;
     _controlField.style.width = controlTableSize.toString() + "px";
     _controlField.style.height = controlTableSize.toString() + "px";
   }
 
+  /**
+   * Sets the internal model to a new [Sudoku].
+   */
   void setModel(Sudoku sudoku) {
     this._model = sudoku;
   }
